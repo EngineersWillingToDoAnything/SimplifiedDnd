@@ -2,7 +2,8 @@ namespace SimplifiedDnd.Domain.Spells;
 
 [Flags]
 public enum SpellComponent {
-  Verbal,
-  Somatic,
-  Material
+  None = 0,
+  Verbal = 1,
+  Somatic = 2,
+  Material = 4
 }

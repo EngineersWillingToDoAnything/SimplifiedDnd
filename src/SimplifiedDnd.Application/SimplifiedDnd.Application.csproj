@@ -1,8 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <ItemGroup>
-    <PackageReference Include="MediatR" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\SimplifiedDnd.Domain\SimplifiedDnd.Domain.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="MediatR" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\SimplifiedDnd.Domain\SimplifiedDnd.Domain.csproj" />
+    </ItemGroup>
 </Project>
