@@ -1,13 +1,19 @@
 ﻿namespace SimplifiedDnd.Domain.Characters;
 
+public class CharacterIdentifier {
+  public required Guid Id { get; init; }
+  public required string Name { get; init; }
+  public required string PlayerName { get; init; }
+}
+
 public class Character {
   public required Guid Id { get; init; }
   public required string Name { get; init; }
   public required string PlayerName { get; init; }
   public Dictionary<StatType, Stat> Stats { get; init; }
 
-  public Specie? Specie {get; set;}
-  public DndClass? MainClass {get; set;}
+  public Specie? Specie { get; set; }
+  public DndClass? MainClass { get; set; }
   public IReadOnlyCollection<DndClass> Classes { get; set; } = [];
 
   public Character(Dictionary<StatType, Stat>? stats = null) {

@@ -1,5 +1,4 @@
 using MediatR;
-using SimplifiedDnd.Application.Characters.CreateCharacter;
 
 namespace SimplifiedDnd.Application.Abstractions.Core;
 
