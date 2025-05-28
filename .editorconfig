@@ -221,7 +221,8 @@ dotnet_naming_style.begins_with_i.required_suffix =
 dotnet_naming_style.begins_with_i.word_separator =
 dotnet_naming_style.begins_with_i.capitalization = pascal_case
 
-# CA2225: 
+# CA2225: Operator overloads have named alternates
 dotnet_diagnostic.CA2225.severity = none
-dotnet_diagnostic.CA1716.severity = none
+
+# CA2007: Do not directly await a Task
 dotnet_diagnostic.CA2007.severity = none
