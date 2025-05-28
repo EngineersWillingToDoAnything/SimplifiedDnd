@@ -27,7 +27,7 @@ public sealed class CreateCharacterCommandHandlerTest {
       _unitOfWork);
   }
 
-  [Fact(DisplayName = "Handler returns error if character already exists")]
+  [Fact(DisplayName = "Returns error if character already exists")]
   public async Task HandlerReturnsErrorWithExistingCharacter() {
     // Arrange
     var command = new CreateCharacterCommand() {
@@ -48,7 +48,7 @@ public sealed class CreateCharacterCommandHandlerTest {
     result.Error.Should().Be(CharacterError.AlreadyExists);
   }
 
-  [Fact(DisplayName = "Handler returns error if specie was not found")]
+  [Fact(DisplayName = "Returns error if specie was not found")]
   public async Task HandlerReturnsErrorWithNonExistingSpecie() {
     // Arrange
     var command = new CreateCharacterCommand() {
@@ -71,7 +71,7 @@ public sealed class CreateCharacterCommandHandlerTest {
     result.Error.Should().Be(CharacterError.NonExistingSpecie);
   }
 
-  [Fact(DisplayName = "Handler returns character with given attributes")]
+  [Fact(DisplayName = "Returns character with given attributes")]
   public async Task HandlerReturnsCharacterWithGivenAttributes() {
     // Arrange
     var command = new CreateCharacterCommand() {
@@ -101,8 +101,36 @@ public sealed class CreateCharacterCommandHandlerTest {
     result.Value.PlayerName.Should().Be(command.PlayerName);
     result.Value.Specie.Should().BeEquivalentTo(specie);
   }
+  
+  [Fact(DisplayName = "Returns character with guid version 7")]
+  public async Task HandlerReturnsCharacterWithGuidV7() {
+    // Arrange
+    var command = new CreateCharacterCommand() {
+      Name = "Test",
+      PlayerName = "Test",
+      SpecieName = "human",
+    };
 
-  [Fact(DisplayName = "Handler saves character to repository")]
+    _characterRepository
+      .CheckCharacterExistsAsync(command.Name, command.PlayerName, TestContextToken)
+      .Returns(false);
+
+    _specieRepository.GetSpecieAsync(command.SpecieName, TestContextToken)
+      .Returns(new Specie {
+        Name = "human",
+        Size = Size.Tiny,
+        Speed = 1,
+      });
+
+    // Act
+    Result<Character> result = await _handler.Handle(command, TestContextToken);
+
+    // Assert
+    result.IsSuccess.Should().BeTrue();
+    result.Value.Id.Version.Should().Be(7);
+  }
+
+  [Fact(DisplayName = "Saves character to repository")]
   public async Task HandlerSavesCharacterToRepository() {
     // Arrange
     var command = new CreateCharacterCommand() {

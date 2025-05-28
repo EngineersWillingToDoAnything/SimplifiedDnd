@@ -30,7 +30,7 @@ internal sealed class CreateCharacterCommandHandler(
     }
 
     var character = new Character {
-      Id = Guid.NewGuid(),
+      Id = Guid.CreateVersion7(DateTimeOffset.UtcNow),
       Name = command.Name,
       PlayerName = command.PlayerName,
       Specie = specie
