@@ -1,4 +1,3 @@
-using NSubstitute;
 using SimplifiedDnd.Application.Abstractions.Characters;
 using SimplifiedDnd.Application.Abstractions.Core;
 using SimplifiedDnd.Application.Characters;
