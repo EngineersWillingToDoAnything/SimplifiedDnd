@@ -5,17 +5,24 @@ using System.Diagnostics;
 
 namespace SimplifiedDnd.Application.Characters.CreateCharacter;
 
+public interface IClassRepository {
+  Task<DndClass?> GetClassAsync(
+    string name, CancellationToken cancellationToken = default);
+}
+
 internal sealed class CreateCharacterCommandHandler(
-  ISpecieRepository specieRepository,
   ICharacterRepository characterRepository,
+  ISpecieRepository specieRepository,
+  IClassRepository classRepository,
   IUnitOfWork unitOfWork
   ) : ICommandHandler<CreateCharacterCommand, Character> {
   public async Task<Result<Character>> Handle(
     CreateCharacterCommand command, CancellationToken cancellationToken
   ) {
-    Debug.Assert(!string.IsNullOrEmpty(command.Name));
-    Debug.Assert(!string.IsNullOrEmpty(command.PlayerName));
-    Debug.Assert(!string.IsNullOrEmpty(command.SpecieName));
+    Debug.Assert(!string.IsNullOrWhiteSpace(command.Name));
+    Debug.Assert(!string.IsNullOrWhiteSpace(command.PlayerName));
+    Debug.Assert(!string.IsNullOrWhiteSpace(command.SpecieName));
+    Debug.Assert(!string.IsNullOrWhiteSpace(command.ClassName));
 
     bool characterExists = await characterRepository
       .CheckCharacterExistsAsync(command.Name, command.PlayerName, cancellationToken);
@@ -29,11 +36,18 @@ internal sealed class CreateCharacterCommandHandler(
       return CharacterError.NonExistingSpecie;
     }
 
+    DndClass? mainClass = await classRepository.GetClassAsync(
+      command.ClassName, cancellationToken);
+    if (mainClass is null) {
+      return CharacterError.NonExistingClass;
+    }
+    
     var character = new Character {
       Id = Guid.CreateVersion7(DateTimeOffset.UtcNow),
       Name = command.Name,
       PlayerName = command.PlayerName,
-      Specie = specie
+      Specie = specie,
+      MainClass = mainClass,
     };
 
     characterRepository.SaveCharacter(character);

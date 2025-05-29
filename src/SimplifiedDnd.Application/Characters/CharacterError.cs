@@ -10,4 +10,8 @@ public record CharacterError(string Code, string Description) : DomainError(Code
   public static readonly CharacterError NonExistingSpecie = new(
     "CharacterError.NonExistingSpecie",
     "The specified specie doesn't exist.");
+  
+  public static readonly CharacterError NonExistingClass = new(
+    "CharacterError.NonExistingClass",
+    "The specified class doesn't exist.");
 }

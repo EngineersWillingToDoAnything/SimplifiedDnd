@@ -1,18 +1,19 @@
+using System.Diagnostics;
+
 namespace SimplifiedDnd.Domain.Characters;
 
 public class Level {
-  public static Level MaxLevel => new(20, 0);
+  private const uint MaxValue = 20;
+  public static readonly Level MaxLevel = new(MaxValue, 0);
 
-  public uint Value { get; init; }
+  public uint Value { get; private init; }
   public uint CurrentExperience { get; set; }
   private uint _requiredExperience { get; init; }
 
-  public bool IsMaxLevel => Value == MaxLevel.Value;
+  public bool IsMaxLevel => Value == MaxValue;
 
   public Level(uint value, uint currentExperience = 0) {
-    if (value > MaxLevel.Value) {
-      throw new ArgumentException($"Max level is {MaxLevel.Value}");
-    }
+    Debug.Assert(value <= MaxValue);
 
     Value = value;
     if (IsMaxLevel) { return; }
@@ -22,7 +23,7 @@ public class Level {
   }
 
   public Level AddExperience(uint experience) {
-    if (IsMaxLevel) { return MaxLevel; }
+    if (IsMaxLevel) { return this; }
 
     CurrentExperience += experience;
     if (CurrentExperience < _requiredExperience) {
