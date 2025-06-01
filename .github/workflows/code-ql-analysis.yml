@@ -10,10 +10,13 @@ on:
   schedule:
     - cron: '0 8 * * 4'
 
-jobs:
-  analyze:
+env:
+  DOTNET_VERSION: '9.0.300' # The .NET SDK version to use
 
-    name: analyze
+jobs:
+  analyze-sql:
+
+    name: analyze-sql
     runs-on: ubuntu-latest
 
     strategy:
@@ -34,6 +37,11 @@ jobs:
       uses: github/codeql-action/init@v3
       with:
         languages: ${{ matrix.language }}
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
 
     - name: Autobuild
       uses: github/codeql-action/autobuild@v3

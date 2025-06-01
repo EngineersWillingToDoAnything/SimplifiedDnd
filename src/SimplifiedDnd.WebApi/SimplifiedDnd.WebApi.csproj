@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\SimplifiedDnd.Application\SimplifiedDnd.Application.csproj" />
+      <ProjectReference Include="..\SimplifiedDnd.DataBase\SimplifiedDnd.DataBase.csproj" />
+    </ItemGroup>
+
+</Project>
