@@ -10,7 +10,12 @@ using SimplifiedDnd.WebApi.Extensions;
 namespace SimplifiedDnd.WebApi.Endpoints.Characters;
 
 internal sealed class GetCharactersEndpoint : IEndpoint {
-  private sealed record Request(int? PageIndex, int? PageSize) {
+  private sealed record Request(
+    int? PageIndex,
+    int? PageSize,
+    bool? SortAscending,
+    string? OrderKey
+  ) {
     internal GetCharactersQuery ToQuery() {
       Page? page = null;
 
@@ -18,8 +23,14 @@ internal sealed class GetCharactersEndpoint : IEndpoint {
         page = new Page(PageIndex.Value, PageSize.Value);
       }
 
+      Order? order = null;
+      if (SortAscending is not null && OrderKey is not null) {
+        order = SortAscending.Value ? Order.CreateAscending(OrderKey) : Order.CreateDescending(OrderKey);
+      }
+
       return new GetCharactersQuery {
-        Page = page
+        Page = page,
+        Order = order
       };
     }
   }
@@ -40,10 +51,12 @@ internal sealed class GetCharactersEndpoint : IEndpoint {
   private static async Task<IResult> Handle(
     [FromQuery(Name = "page-index")] int? pageIndex,
     [FromQuery(Name = "page-size")] int? pageSize,
+    [FromQuery(Name = "order-asc")] bool? ascending,
+    [FromQuery(Name = "order-key")] string? orderKey,
     ISender sender,
     CancellationToken cancellationToken
   ) {
-    GetCharactersQuery query = new Request(pageIndex, pageSize).ToQuery();
+    GetCharactersQuery query = new Request(pageIndex, pageSize, ascending, orderKey).ToQuery();
 
     Result<PaginatedResult<Character>> response = await sender.Send(
       query, cancellationToken);

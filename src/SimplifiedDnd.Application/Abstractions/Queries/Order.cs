@@ -9,6 +9,6 @@ public record Order {
     Ascending = ascending;
   }
 
-  internal static Order CreateDescending(string key) => new(key, false);
-  internal static Order CreateAscending(string key) => new(key, true);
+  public static Order CreateDescending(string key) => new(key, false);
+  public static Order CreateAscending(string key) => new(key, true);
 }
