@@ -10,18 +10,18 @@ public record GetCharactersQuery : IQuery<PaginatedResult<Character>> {
   public Order? Order { get; init; }
   public CharacterFilter Filter { get; init; } = new();
 
-  public bool OrderIsValid() {
+  public static bool OrderIsValid(Order? order) {
     List<string> validOrderKeys = [
       nameof(Character.Id),
       nameof(Character.Name),
       nameof(Character.MainClass),
       nameof(Character.Specie)
     ];
-    return Order is null ||
-           validOrderKeys.Contains(Order.Key, StringComparer.OrdinalIgnoreCase);
+    return order is null ||
+           validOrderKeys.Contains(order.Key, StringComparer.OrdinalIgnoreCase);
   }
-  
-  public bool PageIsValid() {
-    return Page is null || Page.IsValid();
+
+  public static bool PageIsValid(Page? page) {
+    return page is null || page.IsValid();
   }
 }
