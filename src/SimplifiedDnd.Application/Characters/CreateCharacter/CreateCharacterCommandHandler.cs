@@ -5,11 +5,6 @@ using System.Diagnostics;
 
 namespace SimplifiedDnd.Application.Characters.CreateCharacter;
 
-public interface IClassRepository {
-  Task<DndClass?> GetClassAsync(
-    string name, CancellationToken cancellationToken = default);
-}
-
 internal sealed class CreateCharacterCommandHandler(
   ICharacterRepository characterRepository,
   ISpecieRepository specieRepository,

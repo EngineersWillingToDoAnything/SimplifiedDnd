@@ -6,9 +6,9 @@ using SimplifiedDnd.Domain.Characters;
 namespace SimplifiedDnd.Application.Characters.GetCharacters;
 
 public record GetCharactersQuery : IQuery<PaginatedResult<Character>> {
-  internal Page? Page { get; init; }
-  internal Order? Order { get; init; }
-  internal CharacterFilter Filter { get; init; } = new();
+  public Page? Page { get; init; }
+  public Order? Order { get; init; }
+  public CharacterFilter Filter { get; init; } = new();
 
   public bool OrderIsValid() {
     List<string> validOrderKeys = [
