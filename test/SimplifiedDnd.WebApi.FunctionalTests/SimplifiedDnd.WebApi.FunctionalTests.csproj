@@ -11,14 +11,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Content Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest"/>
-    </ItemGroup>
-
-    <ItemGroup>
-        <Using Include="Xunit"/>
-    </ItemGroup>
-
-    <ItemGroup>
         <PackageReference Include="Aspire.Hosting.Testing" />
         <PackageReference Include="FluentAssertions" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" />
@@ -27,8 +19,16 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\src\SimplifiedDnd.AspireHost\SimplifiedDnd.AspireHost.csproj" />
-      <ProjectReference Include="..\..\src\SimplifiedDnd.WebApi\SimplifiedDnd.WebApi.csproj" />
+        <ProjectReference Include="..\..\src\SimplifiedDnd.AspireHost\SimplifiedDnd.AspireHost.csproj" />
+        <ProjectReference Include="..\..\src\SimplifiedDnd.WebApi\SimplifiedDnd.WebApi.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Using Include="Xunit"/>
     </ItemGroup>
 
 </Project>

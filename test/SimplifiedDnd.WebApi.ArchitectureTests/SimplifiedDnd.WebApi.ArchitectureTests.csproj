@@ -5,17 +5,20 @@
         <Nullable>enable</Nullable>
         <OutputType>Exe</OutputType>
         <TargetFramework>net9.0</TargetFramework>
-        <!--
-        To enable the Microsoft Testing Platform 'dotnet test' experience, add property:
-          <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
-    
-        To enable the Microsoft Testing Platform native command line experience, add property:
-          <UseMicrosoftTestingPlatformRunner>true</UseMicrosoftTestingPlatformRunner>
-    
-        For more information on Microsoft Testing Platform support in xUnit.net, please visit:
-          https://xunit.net/docs/getting-started/v3/microsoft-testing-platform
-        -->
+        <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
     </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="FluentAssertions"/>
+        <PackageReference Include="Microsoft.NET.Test.Sdk"/>
+        <PackageReference Include="NetArchTest.Rules"/>
+        <PackageReference Include="xunit.v3"/>
+        <PackageReference Include="xunit.runner.visualstudio"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\src\SimplifiedDnd.WebApi\SimplifiedDnd.WebApi.csproj"/>
+    </ItemGroup>
 
     <ItemGroup>
         <Content Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest"/>
@@ -23,18 +26,6 @@
 
     <ItemGroup>
         <Using Include="Xunit"/>
-    </ItemGroup>
-
-    <ItemGroup>
-        <PackageReference Include="FluentAssertions" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0"/>
-        <PackageReference Include="NetArchTest.Rules" />
-        <PackageReference Include="xunit.v3" Version="2.0.1"/>
-        <PackageReference Include="xunit.runner.visualstudio" Version="3.0.2"/>
-    </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\..\src\SimplifiedDnd.WebApi\SimplifiedDnd.WebApi.csproj" />
     </ItemGroup>
 
 </Project>
