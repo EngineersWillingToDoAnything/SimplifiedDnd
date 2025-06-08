@@ -4,8 +4,8 @@ using SimplifiedDnd.WebApi.Extensions;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddApplication()
-  .AddDataBase();
+builder.Services.AddApplication();
+builder.AddDataBase();
 
 builder.Services.AddOpenApi();
 
@@ -15,6 +15,7 @@ WebApplication app = builder.Build();
 
 if (app.Environment.IsDevelopment()) {
   app.MapOpenApi();
+  app.CreateDbIfNotExists();
 }
 
 app.UseHttpsRedirection();

@@ -67,11 +67,11 @@ public sealed class GetCharactersQueryHandlerTest {
     _repository.GetCharactersAsync(query.Page, Arg.Any<Order>(), Arg.Any<CharacterFilter>(), TestContextToken)
       .Returns(new PaginatedResult<Character> {
         Values = Enumerable.Repeat(new Character {
-            Id = Guid.NewGuid(),
+            Id = Guid.CreateVersion7(),
             Name = "Aquiles",
             PlayerName = "Homero"
           }, page.Size).ToList(),
-        TotalAmount = page.Size
+        TotalAmount = page.EndingIndex
       });
 
     // Act
@@ -81,7 +81,7 @@ public sealed class GetCharactersQueryHandlerTest {
     // Assert
     result.IsSuccess.Should().BeTrue();
     result.Value.Values.Should().HaveCount(page.Size);
-    result.Value.TotalAmount.Should().Be(page.SkipAmount + page.Size);
+    result.Value.TotalAmount.Should().Be(page.EndingIndex);
   }
     
   [Fact(DisplayName = "Returns less characters if index * size + size is greater than pages")]
@@ -96,10 +96,10 @@ public sealed class GetCharactersQueryHandlerTest {
     _repository.GetCharactersAsync(query.Page, Arg.Any<Order>(), Arg.Any<CharacterFilter>(), TestContextToken)
       .Returns(new PaginatedResult<Character> {
         Values = Enumerable.Repeat(new Character {
-          Id = Guid.NewGuid(),
+          Id = Guid.CreateVersion7(),
           Name = "Spiderman",
           PlayerName = "Peter Parker"
-        }, (totalAmount - page.SkipAmount) % page.Size).ToList(),
+        }, (totalAmount - page.StartingIndex) % page.Size).ToList(),
         TotalAmount = totalAmount
       });
 
