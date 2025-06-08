@@ -54,8 +54,11 @@ internal sealed class PostgreSqlCharacterRepository(
 
     context.Characters.Add(entity);
   }
-
+  
   private sealed class CharacterFilterBuilder(CharacterFilter filter) : IFilterBuilder<CharacterDbEntity> {
+    private readonly string? _formattedName = filter.Name?.ToUpperInvariant();
+    private readonly IEnumerable<string> _formattedSpeciesName = filter.Species.Select(s => s.ToUpperInvariant());
+    
     public Expression<Func<CharacterDbEntity, bool>> Build() {
       Expression<Func<CharacterDbEntity, bool>> predicate = ExpressionExtension.True<CharacterDbEntity>();
 
@@ -69,12 +72,18 @@ internal sealed class PostgreSqlCharacterRepository(
       return predicate;
     }
 
+#pragma warning disable CA1304
+#pragma warning disable CA1311
+#pragma warning disable CA1862
     private Expression<Func<CharacterDbEntity, bool>> ContainsNameExpression =>
-      c => filter.Name != null &&
-           c.Name.Contains(filter.Name, StringComparison.InvariantCultureIgnoreCase);
+      c => _formattedName != null &&
+           c.Name.ToUpper().Contains(_formattedName);
 
     private Expression<Func<CharacterDbEntity, bool>> BelongsToAnyOfTheSpeciesExpression =>
-      c => filter.Species.Contains(c.Specie!.Name, StringComparer.InvariantCultureIgnoreCase);
+      c => _formattedSpeciesName.Contains(c.Specie!.Name.ToUpper());
+#pragma warning restore CA1862
+#pragma warning restore CA1311
+#pragma warning restore CA1304
   }
 
   private sealed class CharacterOrderBuilder(Order order) : IOrderBuilder<CharacterDbEntity> {

@@ -12,10 +12,11 @@ namespace SimplifiedDnd.WebApi.FunctionalTests.Characters;
 public class GetCharactersEndpointTest(
   ApiTestFactory factory
 ) : IClassFixture<ApiTestFactory>,
-    IAsyncLifetime {
+  IAsyncLifetime {
   private const string Path = "/api/characters";
+  private const string ApiResourceName = "api";
   private static CancellationToken TestContextToken => TestContext.Current.CancellationToken;
-  
+
 #pragma warning disable CA1816
   public ValueTask DisposeAsync() {
     return ValueTask.CompletedTask;
@@ -31,7 +32,7 @@ public class GetCharactersEndpointTest(
     Explicit = false)]
   public async Task EndpointReturnsOkWithoutParameters() {
     // Arrange
-    HttpClient client = factory.CreateHttpClient("api");
+    HttpClient client = factory.CreateHttpClient(ApiResourceName);
 
     // Act
     HttpResponseMessage response = await client.GetAsync(
@@ -46,7 +47,7 @@ public class GetCharactersEndpointTest(
     Explicit = false)]
   public async Task EndpointReturnsListWithoutParameters() {
     // Arrange
-    HttpClient client = factory.CreateHttpClient("api");
+    HttpClient client = factory.CreateHttpClient(ApiResourceName);
 
     // Act
     List<Response>? content = await client.GetFromJsonAsync<List<Response>>(
@@ -65,7 +66,7 @@ public class GetCharactersEndpointTest(
       { "page-index", "-1" },
       { "page-size", "-1" },
     };
-    HttpClient client = factory.CreateHttpClient("api");
+    HttpClient client = factory.CreateHttpClient(ApiResourceName);
 
     // Act
     HttpResponseMessage response = await client.GetAsync(
@@ -85,7 +86,7 @@ public class GetCharactersEndpointTest(
       { "page-index", "-1" },
       { "page-size", "0" },
     };
-    HttpClient client = factory.CreateHttpClient("api");
+    HttpClient client = factory.CreateHttpClient(ApiResourceName);
 
     // Act
     HttpResponseMessage response = await client.GetAsync(
@@ -105,7 +106,7 @@ public class GetCharactersEndpointTest(
       { "page-index", "-1" },
       { "page-size", "0" },
     };
-    HttpClient client = factory.CreateHttpClient("api");
+    HttpClient client = factory.CreateHttpClient(ApiResourceName);
 
     // Act
     HttpResponseMessage response = await client.GetAsync(
@@ -133,7 +134,7 @@ public class GetCharactersEndpointTest(
       { "order-asc", "true" },
       { "order-key", orderKey },
     };
-    HttpClient client = factory.CreateHttpClient("api");
+    HttpClient client = factory.CreateHttpClient(ApiResourceName);
 
     // Act
     HttpResponseMessage response = await client.GetAsync(
@@ -153,7 +154,7 @@ public class GetCharactersEndpointTest(
       { "order-asc", "true" },
       { "order-key", string.Empty },
     };
-    HttpClient client = factory.CreateHttpClient("api");
+    HttpClient client = factory.CreateHttpClient(ApiResourceName);
 
     // Act
     HttpResponseMessage response = await client.GetAsync(
@@ -167,6 +168,96 @@ public class GetCharactersEndpointTest(
     content.Status.Should().Be(StatusCodes.Status400BadRequest);
     content.Detail.Should().Be("One or more validation errors occurred");
     content.Extensions.Should().NotBeNullOrEmpty();
+  }
+
+  [Fact(
+    DisplayName = "Returns 200 OK with part of the character name to filter",
+    Explicit = false)]
+  public async Task EndpointReturnsOkWithPartOfTheCharacterNameToFilter() {
+    var query = new Dictionary<string, string?> {
+      { "filter-name", "bruce" }
+    };
+    HttpClient client = factory.CreateHttpClient(ApiResourceName);
+
+    // Act
+    HttpResponseMessage response = await client.GetAsync(
+      new Uri(QueryHelpers.AddQueryString(Path, query), UriKind.Relative),
+      TestContextToken);
+
+    // Assert
+    response.StatusCode.Should().Be(HttpStatusCode.OK);
+  }
+
+  [Fact(
+    DisplayName = "Returns 200 OK with the name of the specie to filter",
+    Explicit = false)]
+  public async Task EndpointReturnsOkWithTheNameOfTheSpecieToFilter() {
+    var query = new Dictionary<string, string?> {
+      { "filter-species", "dwarf" },
+    };
+    HttpClient client = factory.CreateHttpClient(ApiResourceName);
+
+    // Act
+    HttpResponseMessage response = await client.GetAsync(
+      new Uri(QueryHelpers.AddQueryString(Path, query), UriKind.Relative),
+      TestContextToken);
+
+    // Assert
+    response.StatusCode.Should().Be(HttpStatusCode.OK);
+  }
+
+  [Fact(
+    DisplayName = "Returns 200 OK with more than one specie to filter",
+    Explicit = false)]
+  public async Task EndpointReturnsOkWithMoreThanOneSpecieToFilter() {
+    var query = new Dictionary<string, string?> {
+      { "filter-species", "human,tiefling,elf" },
+    };
+    HttpClient client = factory.CreateHttpClient(ApiResourceName);
+
+    // Act
+    HttpResponseMessage response = await client.GetAsync(
+      new Uri(QueryHelpers.AddQueryString(Path, query), UriKind.Relative),
+      TestContextToken);
+
+    // Assert
+    response.StatusCode.Should().Be(HttpStatusCode.OK);
+  }
+
+  [Fact(
+    DisplayName = "Returns 200 OK with the name of the class to filter",
+    Explicit = false)]
+  public async Task EndpointReturnsOkWithTheNameOfTheClassToFilter() {
+    var query = new Dictionary<string, string?> {
+      { "filter-classes", "fighter" },
+    };
+    HttpClient client = factory.CreateHttpClient(ApiResourceName);
+
+    // Act
+    HttpResponseMessage response = await client.GetAsync(
+      new Uri(QueryHelpers.AddQueryString(Path, query), UriKind.Relative),
+      TestContextToken);
+
+    // Assert
+    response.StatusCode.Should().Be(HttpStatusCode.OK);
+  }
+
+  [Fact(
+    DisplayName = "Returns 200 OK with more than one class to filter",
+    Explicit = false)]
+  public async Task EndpointReturnsOkWithMoreThanOneClassToFilter() {
+    var query = new Dictionary<string, string?> {
+      { "filter-classes", "paladin,monk,ranger" },
+    };
+    HttpClient client = factory.CreateHttpClient(ApiResourceName);
+
+    // Act
+    HttpResponseMessage response = await client.GetAsync(
+      new Uri(QueryHelpers.AddQueryString(Path, query), UriKind.Relative),
+      TestContextToken);
+
+    // Assert
+    response.StatusCode.Should().Be(HttpStatusCode.OK);
   }
 
   [Theory(
@@ -183,8 +274,11 @@ public class GetCharactersEndpointTest(
       { "page-size", "10" },
       { "order-asc", "false" },
       { "order-key", orderKey },
+      { "filter-name", "bruce" },
+      { "filter-species", "human,tiefling" },
+      { "filter-classes", "barbarian,druid,cleric" },
     };
-    HttpClient client = factory.CreateHttpClient("api");
+    HttpClient client = factory.CreateHttpClient(ApiResourceName);
 
     // Act
     List<Response>? content = await client.GetFromJsonAsync<List<Response>>(
