@@ -12,8 +12,8 @@ public class Character {
   public required string PlayerName { get; init; }
   public Dictionary<StatType, Stat> Stats { get; init; }
 
-  public Specie? Specie { get; set; }
-  public DndClass? MainClass { get; set; }
+  public Specie? Specie { get; init; }
+  public DndClass? MainClass { get; init; }
   public IReadOnlyCollection<DndClass> Classes { get; set; } = [];
 
   public Character(Dictionary<StatType, Stat>? stats = null) {

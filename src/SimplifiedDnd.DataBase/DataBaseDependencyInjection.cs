@@ -19,7 +19,7 @@ public static class DataBaseDependencyInjection {
     builder.Services.AddScoped<ICharacterRepository, PostgreSqlCharacterRepository>();
 
     builder.Services.AddScoped<ISpecieRepository, PostgreSqlSpecieRepository>();
-    builder.Services.AddScoped<IClassRepository, FakeClassRepository>();
+    builder.Services.AddScoped<IClassRepository, PostgreSqlClassRepository>();
     builder.Services.AddScoped<IUnitOfWork, MainDbContext>();
 
     return builder;

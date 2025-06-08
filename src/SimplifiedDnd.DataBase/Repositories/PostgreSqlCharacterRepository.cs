@@ -6,6 +6,7 @@ using SimplifiedDnd.DataBase.Contexts;
 using SimplifiedDnd.DataBase.Entities;
 using SimplifiedDnd.DataBase.Extensions;
 using SimplifiedDnd.Domain.Characters;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq.Expressions;
 
@@ -27,9 +28,11 @@ internal sealed class PostgreSqlCharacterRepository(
   ) {
     IQueryable<CharacterDbEntity> query = context.Characters
       .Include(c => c.Specie)
+      .Include(c => c.Classes)
+      .ThenInclude(cls => cls.Class)
       .Where(new CharacterFilterBuilder(filter).Build())
       .AsNoTracking();
-    
+
     int totalAmount = await query.CountAsync(cancellationToken);
 
     query = new CharacterOrderBuilder(order).Build(query);
@@ -46,27 +49,47 @@ internal sealed class PostgreSqlCharacterRepository(
   }
 
   public void SaveCharacter(Character character) {
+    Debug.Assert(character.MainClass is not null);
+    Debug.Assert(character.Specie is not null);
+
+    var mainClassEntity = new CharacterClassDbEntity {
+      Class = context.Classes
+        .First(entity => entity.Name == character.MainClass.Name),
+      IsMainClass = true
+    };
+
+    SpecieDbEntity relatedSpecieEntity = context.Species
+      .First(entity => entity.Name == character.Specie.Name);
+
     var entity = new CharacterDbEntity {
       Id = character.Id,
       Name = character.Name,
       PlayerName = character.PlayerName,
+      Classes = [mainClassEntity],
+      Specie = relatedSpecieEntity,
     };
 
     context.Characters.Add(entity);
   }
-  
+
   private sealed class CharacterFilterBuilder(CharacterFilter filter) : IFilterBuilder<CharacterDbEntity> {
     private readonly string? _formattedName = filter.Name?.ToUpperInvariant();
     private readonly IEnumerable<string> _formattedSpeciesName = filter.Species.Select(s => s.ToUpperInvariant());
-    
+    private readonly IEnumerable<string> _formattedClassesName = filter.Classes.Select(c => c.ToUpperInvariant());
+
     public Expression<Func<CharacterDbEntity, bool>> Build() {
       Expression<Func<CharacterDbEntity, bool>> predicate = ExpressionExtension.True<CharacterDbEntity>();
 
       if (filter.Name is not null) {
         predicate = predicate.And(ContainsNameExpression);
       }
+
       if (filter.Species.Count != 0) {
         predicate = predicate.And(BelongsToAnyOfTheSpeciesExpression);
+      }
+
+      if (filter.Classes.Count != 0) {
+        predicate = predicate.And(BelongsToAnyOfTheClassesExpression);
       }
 
       return predicate;
@@ -76,11 +99,16 @@ internal sealed class PostgreSqlCharacterRepository(
 #pragma warning disable CA1311
 #pragma warning disable CA1862
     private Expression<Func<CharacterDbEntity, bool>> ContainsNameExpression =>
-      c => _formattedName != null &&
-           c.Name.ToUpper().Contains(_formattedName);
+      character => _formattedName != null &&
+           character.Name.ToUpper().Contains(_formattedName);
 
     private Expression<Func<CharacterDbEntity, bool>> BelongsToAnyOfTheSpeciesExpression =>
-      c => _formattedSpeciesName.Contains(c.Specie!.Name.ToUpper());
+      character => _formattedSpeciesName.Contains(character.Specie!.Name.ToUpper());
+
+    private Expression<Func<CharacterDbEntity, bool>> BelongsToAnyOfTheClassesExpression =>
+      character =>
+        character.Classes.Any(characterClass =>
+          _formattedClassesName.Contains(characterClass.Class!.Name.ToUpper()));
 #pragma warning restore CA1862
 #pragma warning restore CA1311
 #pragma warning restore CA1304
@@ -89,7 +117,7 @@ internal sealed class PostgreSqlCharacterRepository(
   private sealed class CharacterOrderBuilder(Order order) : IOrderBuilder<CharacterDbEntity> {
     public IOrderedQueryable<CharacterDbEntity> Build(IQueryable<CharacterDbEntity> queryable) {
       TextInfo textInfo = CultureInfo.InvariantCulture.TextInfo;
-      
+
       return textInfo.ToTitleCase(order.Key) switch {
         nameof(Character.Name) => order.Ascending
           ? queryable.OrderBy(c => c.Name)
