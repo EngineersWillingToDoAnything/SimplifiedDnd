@@ -40,8 +40,8 @@ internal sealed class GetCharactersEndpoint : IEndpoint {
     ) {
       _filter = new CharacterFilter {
         Name = partOfCharacterName,
-        Species = [..possibleSpecies?.Split(',') ?? []],
-        Classes = [..possibleClasses?.Split(',') ?? []]
+        Species = [..ParseCustomList(possibleSpecies)],
+        Classes = [..ParseCustomList(possibleClasses)]
       };
       return this;
     }
@@ -52,6 +52,13 @@ internal sealed class GetCharactersEndpoint : IEndpoint {
         Order = _order,
         Filter = _filter
       };
+    }
+
+    private static IEnumerable<string> ParseCustomList(string? list) {
+      const char customListSeparator = ',';
+      return list?.Split(customListSeparator)
+        .Select(s => s.Trim())
+        .Where(s => !string.IsNullOrWhiteSpace(s)) ?? [];
     }
   }
 

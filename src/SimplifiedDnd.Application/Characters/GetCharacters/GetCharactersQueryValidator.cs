@@ -11,5 +11,15 @@ internal sealed class GetCharactersQueryValidator : AbstractValidator<GetCharact
     RuleFor(query => query.Order)
       .Must(GetCharactersQuery.OrderIsValid)
       .WithMessage("Key to order by isn't valid");
+
+    RuleFor(query => query.Filter.Classes)
+      .Must(classes => classes.All(c => !string.IsNullOrWhiteSpace(c)))
+      .WithMessage("All classes must have a value")
+      .When(query => query.Filter.Classes.Count > 0);
+    
+    RuleFor(query => query.Filter.Species)
+      .Must(species => species.All(s => !string.IsNullOrWhiteSpace(s)))
+      .WithMessage("All species must have a value")
+      .When(query => query.Filter.Species.Count > 0);
   }
 }

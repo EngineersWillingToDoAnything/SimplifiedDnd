@@ -8,6 +8,8 @@ internal class MainDbContext(
   DbContextOptions<MainDbContext> options
 ) : DbContext(options), IUnitOfWork {
   internal DbSet<CharacterDbEntity> Characters { get; set; }
+  internal DbSet<CharacterClassDbEntity> CharacterClasses { get; set; }
+  internal DbSet<ClassDbEntity> Classes { get; set; }
   internal DbSet<SpecieDbEntity> Species { get; set; }
 
   protected override void OnModelCreating(ModelBuilder modelBuilder) {

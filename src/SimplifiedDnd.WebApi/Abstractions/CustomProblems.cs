@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using SimplifiedDnd.Application.Abstractions;
-using SimplifiedDnd.Application.Abstractions.Behaviors;
 using SimplifiedDnd.Application.Abstractions.Core;
 
 namespace SimplifiedDnd.WebApi.Abstractions;

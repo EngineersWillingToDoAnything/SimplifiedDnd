@@ -1,4 +1,5 @@
 using FluentValidation.TestHelper;
+using SimplifiedDnd.Application.Abstractions.Characters;
 using SimplifiedDnd.Application.Abstractions.Queries;
 using SimplifiedDnd.Application.Characters.GetCharacters;
 using SimplifiedDnd.Domain.Characters;
@@ -118,5 +119,47 @@ public sealed class GetCharactersQueryValidatorTest {
 
     // Assert
     result.ShouldNotHaveValidationErrorFor(q => q.Order);
+  }
+  
+  [Theory(DisplayName = "Returns invalid with empty class")]
+  [InlineData(null)]
+  [InlineData("")]
+  [InlineData(" ")]
+  public void ValidatorReturnsErrorWithEmptyClass(string? emptyClass) {
+    // Arrange
+    var query = new GetCharactersQuery {
+      Filter = new CharacterFilter {
+        Classes = [emptyClass!]
+      }
+    };
+
+    // Act
+    TestValidationResult<GetCharactersQuery>? result = _validator.TestValidate(query);
+
+    // Assert
+    result.ShouldHaveValidationErrorFor(q => q.Filter.Classes)
+      .WithErrorMessage("All classes must have a value")
+      .Only();
+  }
+
+  [Theory(DisplayName = "Returns invalid with empty specie")]
+  [InlineData(null)]
+  [InlineData("")]
+  [InlineData(" ")]
+  public void ValidatorReturnsErrorWithEmptySpecie(string? emptySpecie) {
+    // Arrange
+    var query = new GetCharactersQuery {
+      Filter = new CharacterFilter {
+        Species = [emptySpecie!]
+      }
+    };
+
+    // Act
+    TestValidationResult<GetCharactersQuery>? result = _validator.TestValidate(query);
+
+    // Assert
+    result.ShouldHaveValidationErrorFor(q => q.Filter.Species)
+      .WithErrorMessage("All species must have a value")
+      .Only();
   }
 }

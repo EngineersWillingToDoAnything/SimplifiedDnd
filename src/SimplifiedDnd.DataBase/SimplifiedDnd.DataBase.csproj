@@ -13,7 +13,11 @@
     <ItemGroup>
         <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" />
         <PackageReference Include="Microsoft.EntityFrameworkCore" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Analyzers" />
         <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
     </ItemGroup>
 
+    <ItemGroup>
+        <InternalsVisibleTo Include="SimplifiedDnd.MigrationService" />
+    </ItemGroup>
 </Project>

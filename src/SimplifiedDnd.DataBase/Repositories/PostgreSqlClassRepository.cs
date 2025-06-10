@@ -6,23 +6,23 @@ using SimplifiedDnd.Domain.Characters;
 
 namespace SimplifiedDnd.DataBase.Repositories;
 
-internal sealed class PostgreSqlSpecieRepository(
+internal sealed class PostgreSqlClassRepository(
   MainDbContext context
-) : ISpecieRepository {
-  public async Task<Specie?> GetSpecieAsync(
-    string name, CancellationToken cancellationToken
+) : IClassRepository {
+  public async Task<DndClass?> GetClassAsync(
+    string name, CancellationToken cancellationToken = default
   ) {
 #pragma warning disable CA1304
 #pragma warning disable CA1311
 #pragma warning disable CA1862
     string formattedName = name.ToUpperInvariant();
-    
-    SpecieDbEntity? entity = await context.Species.FirstOrDefaultAsync(s =>
-      s.Name.ToUpper() == formattedName, cancellationToken);
-    
+
+    ClassDbEntity? entity = await context.Classes.FirstOrDefaultAsync(c => 
+      c.Name.ToUpper() == formattedName, cancellationToken);
+
     return entity?.ToDomain();
-#pragma warning restore CA1862
-#pragma warning restore CA1311
 #pragma warning restore CA1304
+#pragma warning restore CA1311
+#pragma warning restore CA1862
   }
 }
