@@ -24,7 +24,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimplifiedDnd.WebApi", "src
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimplifiedDnd.DataBase", "src\SimplifiedDnd.DataBase\SimplifiedDnd.DataBase.csproj", "{CBA40E67-318B-4983-A07A-11124BA6596C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimplifiedDnd.WebApi.ArchitectureTests", "test\SimplifiedDnd.WebApi.ArchitectureTests\SimplifiedDnd.WebApi.ArchitectureTests.csproj", "{FB7C90DC-2724-4945-ACE2-87D012C8C9FF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimplifiedDnd.ArchitectureTests", "test\SimplifiedDnd.ArchitectureTests\SimplifiedDnd.ArchitectureTests.csproj", "{FB7C90DC-2724-4945-ACE2-87D012C8C9FF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimplifiedDnd.AspireHost", "src\SimplifiedDnd.AspireHost\SimplifiedDnd.AspireHost.csproj", "{785D1CB9-4B53-4843-8ABB-3FCB357F62C1}"
 EndProject
