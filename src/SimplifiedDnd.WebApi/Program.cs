@@ -15,7 +15,6 @@ WebApplication app = builder.Build();
 
 if (app.Environment.IsDevelopment()) {
   app.MapOpenApi();
-  app.CreateDbIfNotExists();
 }
 
 app.UseHttpsRedirection();

@@ -14,6 +14,7 @@ internal class CharacterDbEntityConfiguration : IEntityTypeConfiguration<Charact
       .IsUnique();
 
     builder.Property(c => c.Id)
+      .ValueGeneratedNever()
       .IsFixedLength()
       .HasMaxLength(36)
       .IsRequired()

@@ -18,6 +18,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\SimplifiedDnd.MigrationService\SimplifiedDnd.MigrationService.csproj" />
       <ProjectReference Include="..\SimplifiedDnd.WebApi\SimplifiedDnd.WebApi.csproj" />
     </ItemGroup>
 
