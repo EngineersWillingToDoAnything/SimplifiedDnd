@@ -88,7 +88,7 @@ public sealed class LayerTests {
   
   
   private sealed class UnexpectedMigrationDependencies() : TheoryData<string>(
-    MigrationAssembly.GetName().Name!);
+    ApiAssembly.GetName().Name!);
   
   [Theory(DisplayName = "Migration background service doesn't depends on layer")]
   [ClassData(typeof(UnexpectedMigrationDependencies))]
