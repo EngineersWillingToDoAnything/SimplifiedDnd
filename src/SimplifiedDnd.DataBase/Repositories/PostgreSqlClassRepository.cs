@@ -9,20 +9,14 @@ namespace SimplifiedDnd.DataBase.Repositories;
 internal sealed class PostgreSqlClassRepository(
   MainDbContext context
 ) : IClassRepository {
-  public async Task<DndClass?> GetClassAsync(
+  public async Task<bool> CheckClassExistsAsync(
     string name, CancellationToken cancellationToken = default
   ) {
-#pragma warning disable CA1304
-#pragma warning disable CA1311
-#pragma warning disable CA1862
+#pragma warning disable CA1304, CA1311, CA1862
     string formattedName = name.ToUpperInvariant();
 
-    ClassDbEntity? entity = await context.Classes.FirstOrDefaultAsync(c => 
+    return await context.Classes.AnyAsync(c => 
       c.Name.ToUpper() == formattedName, cancellationToken);
-
-    return entity?.ToDomain();
-#pragma warning restore CA1304
-#pragma warning restore CA1311
-#pragma warning restore CA1862
+#pragma warning restore CA1304, CA1311, CA1862
   }
 }

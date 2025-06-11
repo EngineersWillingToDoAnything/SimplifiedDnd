@@ -3,9 +3,15 @@ using SimplifiedDnd.Domain.Characters;
 
 namespace SimplifiedDnd.Application.Characters.CreateCharacter;
 
-public sealed class CreateCharacterCommand : ICommand<Character> {
+public class CreateCharacterCommand : ICommand<Character> {
   public required string Name { get; init; }
   public required string PlayerName { get; init; }
   public required string SpecieName { get; init; }
-  public required string ClassName { get; init; }
+  public required IReadOnlyCollection<DndClass> Classes { get; init; }
+
+  public static bool ClassesAreValid(IReadOnlyCollection<DndClass>? classes) {
+    return classes is not null &&
+           classes.Count > 0 &&
+           classes.All(c => !string.IsNullOrWhiteSpace(c.Name));
+  }
 }
