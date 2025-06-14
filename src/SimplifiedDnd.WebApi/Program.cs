@@ -1,5 +1,6 @@
 using SimplifiedDnd.Application;
 using SimplifiedDnd.DataBase;
+using SimplifiedDnd.WebApi.Abstractions;
 using SimplifiedDnd.WebApi.Extensions;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -9,6 +10,9 @@ builder.AddDataBase();
 
 builder.Services.AddOpenApi();
 
+builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+
 builder.Services.AddEndpoints(typeof(Program).Assembly);
 
 WebApplication app = builder.Build();
@@ -17,6 +21,7 @@ if (app.Environment.IsDevelopment()) {
   app.MapOpenApi();
 }
 
+app.UseExceptionHandler();
 app.UseHttpsRedirection();
 app.MapEndpoints();
 
