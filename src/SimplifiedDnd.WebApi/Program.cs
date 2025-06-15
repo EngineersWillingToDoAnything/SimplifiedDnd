@@ -1,3 +1,4 @@
+using FluentValidation;
 using SimplifiedDnd.Application;
 using SimplifiedDnd.DataBase;
 using SimplifiedDnd.WebApi.Abstractions;
@@ -10,6 +11,7 @@ builder.AddDataBase();
 
 builder.Services.AddOpenApi();
 
+builder.Services.AddValidatorsFromAssemblyContaining<Program>(includeInternalTypes: true);
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
