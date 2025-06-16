@@ -10,7 +10,7 @@ internal sealed class CreateCharacterCommandHandler(
   ISpecieRepository specieRepository,
   IClassRepository classRepository,
   IUnitOfWork unitOfWork
-  ) : ICommandHandler<CreateCharacterCommand, Character> {
+) : ICommandHandler<CreateCharacterCommand, Character> {
   public async Task<Result<Character>> Handle(
     CreateCharacterCommand command, CancellationToken cancellationToken
   ) {
@@ -37,7 +37,7 @@ internal sealed class CreateCharacterCommandHandler(
         return CharacterError.NonExistingClass;
       }
     }
-    
+
     var character = new Character {
       Id = Guid.CreateVersion7(DateTimeOffset.UtcNow),
       Name = command.Name,

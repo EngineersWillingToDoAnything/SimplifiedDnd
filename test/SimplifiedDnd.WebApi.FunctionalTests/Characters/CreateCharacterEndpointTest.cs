@@ -20,9 +20,8 @@ public class CreateCharacterEndpointTest(
   public async Task EndpointReturnsBadRequestWithEmptyBody() {
     // Arrange
     HttpClient client = _factory.CreateHttpClient(ApiResourceName);
-    const string requestBody = "{}";
     using var content = new StringContent(
-      requestBody, Encoding.UTF8, MediaTypeNames.Application.Json);
+      "{}", Encoding.UTF8, MediaTypeNames.Application.Json);
 
     // Act
     HttpResponseMessage response = await client.PostAsync(

@@ -15,7 +15,7 @@ internal class CreateCharacterEndpoint : IEndpoint {
     // ReSharper disable once UnusedAutoPropertyAccessor.Local
     public string SpecieName { get; init; } = null!;
   }
-  
+
   internal class RequestValidator : AbstractValidator<Request> {
     public RequestValidator() {
       RuleFor(r => r.Name).NotEmpty();

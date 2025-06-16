@@ -9,13 +9,13 @@ namespace SimplifiedDnd.Application.UnitTests.Characters.GetCharacters;
 public sealed class GetCharactersQueryHandlerTest {
   private static CancellationToken TestContextToken => TestContext.Current.CancellationToken;
   private readonly GetCharactersQueryHandler _handler;
-  
+
   private readonly IReadOnlyCharacterRepository _repository;
 
   public GetCharactersQueryHandlerTest() {
     _repository = Substitute.For<IReadOnlyCharacterRepository>();
-    
-    _handler = new(_repository);
+
+    _handler = new GetCharactersQueryHandler(_repository);
   }
 
   [Fact(DisplayName = "Returns characters")]
@@ -55,7 +55,7 @@ public sealed class GetCharactersQueryHandlerTest {
         Arg.Any<CharacterFilter>(),
         TestContextToken);
   }
-  
+
   [Fact(DisplayName = "Returns exact amount of characters")]
   public async Task HandlerReturnsPaginatedCharacters() {
     // Arrange
@@ -63,14 +63,14 @@ public sealed class GetCharactersQueryHandlerTest {
     var query = new GetCharactersQuery {
       Page = page,
     };
-    
+
     _repository.GetCharactersAsync(query.Page, Arg.Any<Order>(), Arg.Any<CharacterFilter>(), TestContextToken)
       .Returns(new PaginatedResult<Character> {
         Values = Enumerable.Repeat(new Character {
-            Id = Guid.CreateVersion7(),
-            Name = "Aquiles",
-            PlayerName = "Homero"
-          }, page.Size).ToList(),
+          Id = Guid.CreateVersion7(),
+          Name = "Aquiles",
+          PlayerName = "Homero"
+        }, page.Size).ToList(),
         TotalAmount = page.EndingIndex
       });
 
@@ -83,7 +83,7 @@ public sealed class GetCharactersQueryHandlerTest {
     result.Value.Values.Should().HaveCount(page.Size);
     result.Value.TotalAmount.Should().Be(page.EndingIndex);
   }
-    
+
   [Fact(DisplayName = "Returns less characters if index * size + size is greater than pages")]
   public async Task HandlerReturnsLessPaginatedCharacters() {
     // Arrange
@@ -97,7 +97,7 @@ public sealed class GetCharactersQueryHandlerTest {
       .Returns(new PaginatedResult<Character> {
         Values = Enumerable.Repeat(new Character {
           Id = Guid.CreateVersion7(),
-          Name = "Spiderman",
+          Name = "Spider-man",
           PlayerName = "Peter Parker"
         }, (totalAmount - page.StartingIndex) % page.Size).ToList(),
         TotalAmount = totalAmount
@@ -141,7 +141,7 @@ public sealed class GetCharactersQueryHandlerTest {
     var query = new GetCharactersQuery {
       Order = Order.CreateAscending(orderKey)
     };
-    
+
     // Act
     await _handler.Handle(query, TestContextToken);
 
@@ -153,7 +153,7 @@ public sealed class GetCharactersQueryHandlerTest {
         Arg.Any<CharacterFilter>(),
         TestContextToken);
   }
-  
+
   [Theory(DisplayName = "Orders in the specified order")]
   [InlineData(true)]
   [InlineData(false)]
@@ -164,7 +164,7 @@ public sealed class GetCharactersQueryHandlerTest {
         ? Order.CreateAscending(nameof(Character.Id))
         : Order.CreateDescending(nameof(Character.Id))
     };
-    
+
     // Act
     await _handler.Handle(query, TestContextToken);
 
@@ -176,7 +176,7 @@ public sealed class GetCharactersQueryHandlerTest {
         Arg.Any<CharacterFilter>(),
         TestContextToken);
   }
-  
+
   [Fact(DisplayName = "Filters by part of the name")]
   public async Task HandlerFiltersByPartOfName() {
     // Arrange
@@ -186,10 +186,10 @@ public sealed class GetCharactersQueryHandlerTest {
     var query = new GetCharactersQuery {
       Filter = filter
     };
-    
+
     // Act
     await _handler.Handle(query, TestContextToken);
-    
+
     // Assert
     await _repository.Received(1)
       .GetCharactersAsync(
@@ -198,7 +198,7 @@ public sealed class GetCharactersQueryHandlerTest {
         Arg.Is<CharacterFilter>(f => f.Name == filter.Name),
         TestContextToken);
   }
-  
+
   [Fact(DisplayName = "Filters by the main class name being in set")]
   public async Task HandlerFiltersByMainClassBeingInSet() {
     // Arrange
@@ -208,10 +208,10 @@ public sealed class GetCharactersQueryHandlerTest {
     var query = new GetCharactersQuery {
       Filter = filter
     };
-    
+
     // Act
     await _handler.Handle(query, TestContextToken);
-    
+
     // Assert
     await _repository.Received(1)
       .GetCharactersAsync(
@@ -220,7 +220,7 @@ public sealed class GetCharactersQueryHandlerTest {
         Arg.Is<CharacterFilter>(f => f.Classes.SequenceEqual(filter.Classes)),
         TestContextToken);
   }
-  
+
   [Fact(DisplayName = "Filters by the specie name being in set")]
   public async Task HandlerFiltersBySpeciesBeingInSet() {
     // Arrange
@@ -230,10 +230,10 @@ public sealed class GetCharactersQueryHandlerTest {
     var query = new GetCharactersQuery {
       Filter = filter
     };
-    
+
     // Act
     await _handler.Handle(query, TestContextToken);
-    
+
     // Assert
     await _repository.Received(1)
       .GetCharactersAsync(
