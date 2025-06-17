@@ -49,37 +49,34 @@ internal sealed class PostgreSqlCharacterRepository(
   }
 
   public void SaveCharacter(Character character) {
-#pragma warning disable CA1304, CA1311, CA1862
     Debug.Assert(character.MainClass is not null);
     Debug.Assert(character.Classes is not null);
     Debug.Assert(character.Specie is not null);
 
-    var mainClassEntity = new CharacterClassDbEntity {
-      ClassId = context.Classes.First(entity =>
-        entity.Name.ToUpper() == character.MainClass.Name.ToUpper()).Id,
-      IsMainClass = true
-    };
-
-    IEnumerable<CharacterClassDbEntity> otherClassesEntity = character.Classes
-      .Select(dndClass => new CharacterClassDbEntity {
-        ClassId = context.Classes.First(entity => 
-          entity.Name.ToUpper() == dndClass.Name.ToUpper()).Id,
-        IsMainClass = false,
-      });
-
-    int specieId = context.Species.First(entity =>
-        entity.Name.ToUpper() == character.Specie.Name.ToUpper()).Id;
-#pragma warning restore CA1304, CA1311, CA1862
-
-    var entity = new CharacterDbEntity {
+#pragma warning disable CA1304, CA1311, CA1862
+    context.Characters.Add(new CharacterDbEntity {
       Id = character.Id,
       Name = character.Name,
       PlayerName = character.PlayerName,
-      CharacterClasses = [mainClassEntity, ..otherClassesEntity],
-      SpecieId = specieId,
-    };
+      SpecieId = context.Species.Single(entity =>
+        entity.Name.ToUpper() == character.Specie.Name.ToUpper()).Id,
+    });
 
-    context.Characters.Add(entity);
+    context.CharacterClasses.Add(new CharacterClassDbEntity {
+      CharacterId = character.Id,
+      ClassId = context.Classes.Single(entity =>
+        entity.Name.ToUpper() == character.MainClass.Name.ToUpper()).Id,
+      IsMainClass = true
+    });
+
+    context.CharacterClasses.AddRange(character.Classes
+      .Select(dndClass => new CharacterClassDbEntity {
+        CharacterId = character.Id,
+        ClassId = context.Classes.Single(entity =>
+          entity.Name.ToUpper() == dndClass.Name.ToUpper()).Id,
+        IsMainClass = false,
+      }));
+#pragma warning restore CA1304, CA1311, CA1862
   }
 
   private sealed class CharacterFilterBuilder(CharacterFilter filter) : IFilterBuilder<CharacterDbEntity> {
@@ -108,15 +105,14 @@ internal sealed class PostgreSqlCharacterRepository(
 #pragma warning disable CA1304, CA1311, CA1862
     private Expression<Func<CharacterDbEntity, bool>> ContainsNameExpression =>
       character => _formattedName != null &&
-           character.Name.ToUpper().Contains(_formattedName);
+                   character.Name.ToUpper().Contains(_formattedName);
 
     private Expression<Func<CharacterDbEntity, bool>> BelongsToAnyOfTheSpeciesExpression =>
       character => _formattedSpeciesName.Contains(character.Specie!.Name.ToUpper());
 
     private Expression<Func<CharacterDbEntity, bool>> BelongsToAnyOfTheClassesExpression =>
-      character =>
-        character.CharacterClasses.Any(characterClass =>
-          _formattedClassesName.Contains(characterClass.Class!.Name.ToUpper()));
+      character => character.CharacterClasses.Any(characterClass =>
+        _formattedClassesName.Contains(characterClass.Class!.Name.ToUpper()));
 #pragma warning restore CA1862, CA1311, CA1304
   }
 

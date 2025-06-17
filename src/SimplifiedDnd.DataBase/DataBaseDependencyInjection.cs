@@ -18,7 +18,7 @@ public static class DataBaseDependencyInjection {
 
     builder.Services.AddScoped<ISpecieRepository, PostgreSqlSpecieRepository>();
     builder.Services.AddScoped<IClassRepository, PostgreSqlClassRepository>();
-    builder.Services.AddScoped<IUnitOfWork, MainDbContext>();
+    builder.Services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<MainDbContext>());
 
     return builder;
   }
