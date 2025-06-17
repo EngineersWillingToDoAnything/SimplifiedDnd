@@ -1,6 +1,9 @@
 using FluentAssertions;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using SimplifiedDnd.WebApi.FunctionalTests.Abstractions;
 using System.Net;
+using System.Net.Http.Json;
 using System.Net.Mime;
 using System.Text;
 
@@ -31,19 +34,41 @@ public class CreateCharacterEndpointTest(
     response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
   }
 
+  [Fact(
+    DisplayName = "Returns validation error with empty body",
+    Explicit = false)]
+  public async Task EndpointReturnsValidationErrorWithEmptyBody() {
+    // Arrange
+    HttpClient client = _factory.CreateHttpClient(ApiResourceName);
+    using var content = new StringContent(
+      "{}", Encoding.UTF8, MediaTypeNames.Application.Json);
+
+    // Act
+    HttpResponseMessage response = await client.PostAsync(
+      new Uri(Path, UriKind.Relative), content, TestContextToken);
+
+    // Assert
+    ProblemDetails? problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>(TestContextToken);
+    problemDetails.Should().NotBeNull();
+    problemDetails.Title.Should().Be("Validation.General");
+    problemDetails.Status.Should().Be(StatusCodes.Status400BadRequest);
+    problemDetails.Detail.Should().Be("One or more validation errors occurred");
+    problemDetails.Extensions.Should().NotBeNullOrEmpty();
+  }
+
   private class WhiteSpaceData() : TheoryData<string>(string.Empty, " ");
 
   [Theory(
     DisplayName = "Returns 400 Bad Request with empty character name",
     Explicit = false)]
   [ClassData(typeof(WhiteSpaceData))]
-  public async Task EndpointReturnsBadRequestWithEmptyCharacterName(string playerName) {
+  public async Task EndpointReturnsBadRequestWithEmptyCharacterName(string characterName) {
     // Arrange
     HttpClient client = _factory.CreateHttpClient(ApiResourceName);
     string requestBody =
       $$"""
         {
-          "name": "{{playerName}}",
+          "name": "{{characterName}}",
           "player_name": "-",
           "specie_name": "-",
           "classes": [
@@ -63,6 +88,43 @@ public class CreateCharacterEndpointTest(
 
     // Arrange
     response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+  }
+
+  [Theory(
+    DisplayName = "Returns validation error with empty character name",
+    Explicit = false)]
+  [ClassData(typeof(WhiteSpaceData))]
+  public async Task EndpointReturnsValidationErrorWithEmptyCharacterName(string characterName) {
+    // Arrange
+    HttpClient client = _factory.CreateHttpClient(ApiResourceName);
+    string requestBody =
+      $$"""
+        {
+          "name": "{{characterName}}",
+          "player_name": "-",
+          "specie_name": "-",
+          "classes": [
+            {
+              "name": "-",
+              "level": 1
+            }
+          ]
+        }
+        """;
+    using var content = new StringContent(
+      requestBody, Encoding.UTF8, MediaTypeNames.Application.Json);
+
+    // Act
+    HttpResponseMessage response = await client.PostAsync(
+      new Uri(Path, UriKind.Relative), content, TestContextToken);
+
+    // Assert
+    ProblemDetails? problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>(TestContextToken);
+    problemDetails.Should().NotBeNull();
+    problemDetails.Title.Should().Be("Validation.General");
+    problemDetails.Status.Should().Be(StatusCodes.Status400BadRequest);
+    problemDetails.Detail.Should().Be("One or more validation errors occurred");
+    problemDetails.Extensions.Should().NotBeNullOrEmpty();
   }
 
   [Theory(
@@ -98,6 +160,43 @@ public class CreateCharacterEndpointTest(
   }
 
   [Theory(
+    DisplayName = "Returns validation error with empty player name",
+    Explicit = false)]
+  [ClassData(typeof(WhiteSpaceData))]
+  public async Task EndpointReturnsValidationErrorWithEmptyPlayerName(string playerName) {
+    // Arrange
+    HttpClient client = _factory.CreateHttpClient(ApiResourceName);
+    string requestBody =
+      $$"""
+        {
+          "name": "-",
+          "player_name": "{{playerName}}",
+          "specie_name": "-",
+          "classes": [
+            {
+              "name": "-",
+              "level": 1
+            }
+          ]
+        }
+        """;
+    using var content = new StringContent(
+      requestBody, Encoding.UTF8, MediaTypeNames.Application.Json);
+
+    // Act
+    HttpResponseMessage response = await client.PostAsync(
+      new Uri(Path, UriKind.Relative), content, TestContextToken);
+
+    // Assert
+    ProblemDetails? problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>(TestContextToken);
+    problemDetails.Should().NotBeNull();
+    problemDetails.Title.Should().Be("Validation.General");
+    problemDetails.Status.Should().Be(StatusCodes.Status400BadRequest);
+    problemDetails.Detail.Should().Be("One or more validation errors occurred");
+    problemDetails.Extensions.Should().NotBeNullOrEmpty();
+  }
+
+  [Theory(
     DisplayName = "Returns 400 Bad Request with empty specie name",
     Explicit = false)]
   [ClassData(typeof(WhiteSpaceData))]
@@ -109,7 +208,289 @@ public class CreateCharacterEndpointTest(
         {
           "name": "-",
           "player_name": "-",
-          "specie_name": "{{specieName}}"
+          "specie_name": "{{specieName}}",
+          "classes": [
+            {
+              "name": "-",
+              "level": 1
+            }
+          ]
+        }
+        """;
+    using var content = new StringContent(
+      requestBody, Encoding.UTF8, MediaTypeNames.Application.Json);
+
+    //  Act
+    HttpResponseMessage response = await client.PostAsync(
+      new Uri(Path, UriKind.Relative), content, TestContextToken);
+
+    // Arrange
+    response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+  }
+
+  [Theory(
+    DisplayName = "Returns validation error with empty specie name",
+    Explicit = false)]
+  [ClassData(typeof(WhiteSpaceData))]
+  public async Task EndpointReturnsValidationErrorWithEmptySpecieName(string specieName) {
+    // Arrange
+    HttpClient client = _factory.CreateHttpClient(ApiResourceName);
+    string requestBody =
+      $$"""
+        {
+          "name": "-",
+          "player_name": "-",
+          "specie_name": "{{specieName}}",
+          "classes": [
+            {
+              "name": "-",
+              "level": 1
+            }
+          ]
+        }
+        """;
+    using var content = new StringContent(
+      requestBody, Encoding.UTF8, MediaTypeNames.Application.Json);
+
+    // Act
+    HttpResponseMessage response = await client.PostAsync(
+      new Uri(Path, UriKind.Relative), content, TestContextToken);
+
+    // Assert
+    ProblemDetails? problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>(TestContextToken);
+    problemDetails.Should().NotBeNull();
+    problemDetails.Title.Should().Be("Validation.General");
+    problemDetails.Status.Should().Be(StatusCodes.Status400BadRequest);
+    problemDetails.Detail.Should().Be("One or more validation errors occurred");
+    problemDetails.Extensions.Should().NotBeNullOrEmpty();
+  }
+
+  [Theory(
+    DisplayName = "Returns 400 Bad Request with empty class name",
+    Explicit = false)]
+  [ClassData(typeof(WhiteSpaceData))]
+  public async Task EndpointReturnsBadRequestWithEmptyClassName(string className) {
+    // Arrange
+    HttpClient client = _factory.CreateHttpClient(ApiResourceName);
+    string requestBody =
+      $$"""
+        {
+          "name": "-",
+          "player_name": "-",
+          "specie_name": "-",
+          "classes": [
+            {
+              "name": "{{className}}",
+              "level": 1
+            }
+          ]
+        }
+        """;
+    using var content = new StringContent(
+      requestBody, Encoding.UTF8, MediaTypeNames.Application.Json);
+
+    //  Act
+    HttpResponseMessage response = await client.PostAsync(
+      new Uri(Path, UriKind.Relative), content, TestContextToken);
+
+    // Arrange
+    response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+  }
+
+  [Theory(
+    DisplayName = "Returns validation error with empty class name",
+    Explicit = false)]
+  [ClassData(typeof(WhiteSpaceData))]
+  public async Task EndpointReturnsValidationErrorWithEmptyClassName(string className) {
+    // Arrange
+    HttpClient client = _factory.CreateHttpClient(ApiResourceName);
+    string requestBody =
+      $$"""
+        {
+          "name": "-",
+          "player_name": "-",
+          "specie_name": "-",
+          "classes": [
+            {
+              "name": "{{className}}",
+              "level": 1
+            }
+          ]
+        }
+        """;
+    using var content = new StringContent(
+      requestBody, Encoding.UTF8, MediaTypeNames.Application.Json);
+
+    // Act
+    HttpResponseMessage response = await client.PostAsync(
+      new Uri(Path, UriKind.Relative), content, TestContextToken);
+
+    // Assert
+    ProblemDetails? problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>(TestContextToken);
+    problemDetails.Should().NotBeNull();
+    problemDetails.Title.Should().Be("Validation.General");
+    problemDetails.Status.Should().Be(StatusCodes.Status400BadRequest);
+    problemDetails.Detail.Should().Be("One or more validation errors occurred");
+    problemDetails.Extensions.Should().NotBeNullOrEmpty();
+  }
+
+  [Fact(
+    DisplayName = "Returns 400 Bad Request with class level below minimum",
+    Explicit = false)]
+  public async Task EndpointReturnsBadRequestWithClassLevelBelowMinimum() {
+    // Arrange
+    HttpClient client = _factory.CreateHttpClient(ApiResourceName);
+    const string requestBody =
+      """
+      {
+        "name": "-",
+        "player_name": "-",
+        "specie_name": "-",
+        "classes": [
+          {
+            "name": "-",
+            "level": 0
+          }
+        ]
+      }
+      """;
+    using var content = new StringContent(
+      requestBody, Encoding.UTF8, MediaTypeNames.Application.Json);
+
+    //  Act
+    HttpResponseMessage response = await client.PostAsync(
+      new Uri(Path, UriKind.Relative), content, TestContextToken);
+
+    // Arrange
+    response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+  }
+
+  [Fact(
+    DisplayName = "Returns validation error with class level below minimum",
+    Explicit = false)]
+  public async Task EndpointReturnsValidationErrorWithClassLevelBelowMinimum() {
+    // Arrange
+    HttpClient client = _factory.CreateHttpClient(ApiResourceName);
+    const string requestBody =
+      """
+      {
+        "name": "-",
+        "player_name": "-",
+        "specie_name": "-",
+        "classes": [
+          {
+            "name": "-",
+            "level": 0
+          }
+        ]
+      }
+      """;
+    using var content = new StringContent(
+      requestBody, Encoding.UTF8, MediaTypeNames.Application.Json);
+
+    //  Act
+    HttpResponseMessage response = await client.PostAsync(
+      new Uri(Path, UriKind.Relative), content, TestContextToken);
+
+    // Arrange
+    ProblemDetails? problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>(TestContextToken);
+    problemDetails.Should().NotBeNull();
+    problemDetails.Title.Should().Be("Validation.General");
+    problemDetails.Status.Should().Be(StatusCodes.Status400BadRequest);
+    problemDetails.Detail.Should().Be("One or more validation errors occurred");
+    problemDetails.Extensions.Should().NotBeNullOrEmpty();
+  }
+
+  [Fact(
+    DisplayName = "Returns 400 Bad Request with class level above maximum",
+    Explicit = false)]
+  public async Task EndpointReturnsBadRequestWithClassLevelAboveMaximum() {
+    // Arrange
+    HttpClient client = _factory.CreateHttpClient(ApiResourceName);
+    const string requestBody =
+      """
+      {
+        "name": "-",
+        "player_name": "-",
+        "specie_name": "-",
+        "classes": [
+          {
+            "name": "-",
+            "level": 21
+          }
+        ]
+      }
+      """;
+    using var content = new StringContent(
+      requestBody, Encoding.UTF8, MediaTypeNames.Application.Json);
+
+    //  Act
+    HttpResponseMessage response = await client.PostAsync(
+      new Uri(Path, UriKind.Relative), content, TestContextToken);
+
+    // Arrange
+    response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+  }
+
+  [Fact(
+    DisplayName = "Returns validation error with class level above maximum",
+    Explicit = false)]
+  public async Task EndpointReturnsValidationErrorWithClassLevelAboveMinimum() {
+    // Arrange
+    HttpClient client = _factory.CreateHttpClient(ApiResourceName);
+    const string requestBody =
+      """
+      {
+        "name": "-",
+        "player_name": "-",
+        "specie_name": "-",
+        "classes": [
+          {
+            "name": "-",
+            "level": 21
+          }
+        ]
+      }
+      """;
+    using var content = new StringContent(
+      requestBody, Encoding.UTF8, MediaTypeNames.Application.Json);
+
+    //  Act
+    HttpResponseMessage response = await client.PostAsync(
+      new Uri(Path, UriKind.Relative), content, TestContextToken);
+
+    // Arrange
+    ProblemDetails? problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>(TestContextToken);
+    problemDetails.Should().NotBeNull();
+    problemDetails.Title.Should().Be("Validation.General");
+    problemDetails.Status.Should().Be(StatusCodes.Status400BadRequest);
+    problemDetails.Detail.Should().Be("One or more validation errors occurred");
+    problemDetails.Extensions.Should().NotBeNullOrEmpty();
+  }
+
+  [Fact(
+    DisplayName = "Returns 400 Bad Request with repeated class name",
+    Explicit = false)]
+  public async Task EndpointReturnsBadRequestWithRepeatedClassName() {
+    // Arrange
+    HttpClient client = _factory.CreateHttpClient(ApiResourceName);
+    const string className = "-";
+    const string requestBody =
+      $$"""
+        {
+          "name": "-",
+          "player_name": "-",
+          "specie_name": "-",
+          "classes": [
+            {
+              "name": "{{className}}",
+              "level": 1
+            },
+            {
+              "name": "{{className}}",
+              "level": 1
+            }
+          ]
         }
         """;
     using var content = new StringContent(
@@ -124,9 +505,50 @@ public class CreateCharacterEndpointTest(
   }
 
   [Fact(
-    DisplayName = "Returns 404 Not Found with invalid specie",
+    DisplayName = "Returns validation error with repeated class name",
     Explicit = false)]
-  public async Task EndpointReturnsNotFoundWithInvalidSpecie() {
+  public async Task EndpointReturnsValdiationErrorWithRepeatedClassName() {
+    // Arrange
+    HttpClient client = _factory.CreateHttpClient(ApiResourceName);
+    const string className = "-";
+    const string requestBody =
+      $$"""
+        {
+          "name": "-",
+          "player_name": "-",
+          "specie_name": "-",
+          "classes": [
+            {
+              "name": "{{className}}",
+              "level": 1
+            },
+            {
+              "name": "{{className}}",
+              "level": 1
+            }
+          ]
+        }
+        """;
+    using var content = new StringContent(
+      requestBody, Encoding.UTF8, MediaTypeNames.Application.Json);
+
+    //  Act
+    HttpResponseMessage response = await client.PostAsync(
+      new Uri(Path, UriKind.Relative), content, TestContextToken);
+
+    // Arrange
+    ProblemDetails? problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>(TestContextToken);
+    problemDetails.Should().NotBeNull();
+    problemDetails.Title.Should().Be("Validation.General");
+    problemDetails.Status.Should().Be(StatusCodes.Status400BadRequest);
+    problemDetails.Detail.Should().Be("One or more validation errors occurred");
+    problemDetails.Extensions.Should().NotBeNullOrEmpty();
+  }
+
+  [Fact(
+    DisplayName = "Returns 404 Not Found with non existing specie",
+    Explicit = false)]
+  public async Task EndpointReturnsNotFoundWithNonExistingSpecie() {
     // Arrange
     HttpClient client = _factory.CreateHttpClient(ApiResourceName);
     const string requestBody =
@@ -155,9 +577,9 @@ public class CreateCharacterEndpointTest(
   }
 
   [Fact(
-    DisplayName = "Returns 404 Not Found with invalid class name",
+    DisplayName = "Returns 404 Not Found with non existing class name",
     Explicit = false)]
-  public async Task EndpointReturnsNotFoundWithInvalidClass() {
+  public async Task EndpointReturnsNotFoundWithNonExistingClass() {
     // Arrange
     HttpClient client = _factory.CreateHttpClient(ApiResourceName);
     const string requestBody =
@@ -186,9 +608,9 @@ public class CreateCharacterEndpointTest(
   }
 
   [Fact(
-    DisplayName = "Returns 404 Not Found with one valid class and at least one invalid class",
+    DisplayName = "Returns 404 Not Found with at least one non existing class",
     Explicit = false)]
-  public async Task EndpointReturnsNotFoundWithAtLeastOneInvalidClass() {
+  public async Task EndpointReturnsNotFoundWithAtLeastOneNonExistingClass() {
     // Arrange
     HttpClient client = _factory.CreateHttpClient(ApiResourceName);
     const string requestBody =
@@ -218,6 +640,38 @@ public class CreateCharacterEndpointTest(
 
     // Arrange
     response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+  }
+
+  [Fact(
+    DisplayName = "Returns 409 Conflict if character already exists",
+    Explicit = false)]
+  public async Task EndpointReturnsConflictWithExistingCharacter() {
+    // Arrange
+    HttpClient client = _factory.CreateHttpClient(ApiResourceName);
+    string requestBody =
+      $$"""
+        {
+          "name": "{{Guid.CreateVersion7()}}",
+          "player_name": "-",
+          "specie_name": "human",
+          "classes": [
+            {
+              "name": "barbarian",
+              "level": 1
+            }
+          ]
+        }
+        """;
+    using var content = new StringContent(
+      requestBody, Encoding.UTF8, MediaTypeNames.Application.Json);
+    await client.PostAsync(new Uri(Path, UriKind.Relative), content, TestContextToken); // ensure character exists
+
+    //  Act
+    HttpResponseMessage response = await client.PostAsync(
+      new Uri(Path, UriKind.Relative), content, TestContextToken);
+
+    // Arrange
+    response.StatusCode.Should().Be(HttpStatusCode.Conflict);
   }
 
   [Fact(
