@@ -39,7 +39,7 @@ internal class CharacterDbEntityConfiguration : IEntityTypeConfiguration<Charact
       .HasForeignKey(c => c.SpecieId)
       .OnDelete(DeleteBehavior.Restrict);
 
-    builder.HasMany(c => c.Classes)
+    builder.HasMany(c => c.CharacterClasses)
       .WithOne(cc => cc.Character)
       .HasForeignKey(cc => cc.CharacterId)
       .OnDelete(DeleteBehavior.Cascade);

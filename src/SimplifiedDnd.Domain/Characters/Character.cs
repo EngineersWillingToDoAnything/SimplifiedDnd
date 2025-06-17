@@ -1,11 +1,5 @@
 ﻿namespace SimplifiedDnd.Domain.Characters;
 
-public class CharacterIdentifier {
-  public required Guid Id { get; init; }
-  public required string Name { get; init; }
-  public required string PlayerName { get; init; }
-}
-
 public class Character {
   public required Guid Id { get; init; }
   public required string Name { get; init; }

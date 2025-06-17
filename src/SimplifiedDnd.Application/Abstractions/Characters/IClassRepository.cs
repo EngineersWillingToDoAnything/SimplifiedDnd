@@ -3,6 +3,6 @@ using SimplifiedDnd.Domain.Characters;
 namespace SimplifiedDnd.Application.Abstractions.Characters;
 
 public interface IClassRepository {
-  Task<DndClass?> GetClassAsync(
+  Task<bool> CheckClassExistsAsync(
     string name, CancellationToken cancellationToken = default);
 }

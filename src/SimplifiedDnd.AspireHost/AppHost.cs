@@ -1,16 +1,15 @@
 IDistributedApplicationBuilder builder = DistributedApplication.CreateBuilder(args);
 
-IResourceBuilder<PostgresDatabaseResource> simplifiedDndDb = builder
+IResourceBuilder<PostgresDatabaseResource> db = builder
   .AddPostgres("postgres")
-  .WithPgAdmin()
   .AddDatabase("simplifiedDndDb");
 
 builder.AddProject<Projects.SimplifiedDnd_WebApi>("api")
-  .WithReference(simplifiedDndDb)
-  .WaitFor(simplifiedDndDb);
+  .WithReference(db)
+  .WaitFor(db);
 
 builder.AddProject<Projects.SimplifiedDnd_MigrationService>("migrations")
-  .WithReference(simplifiedDndDb)
-  .WaitFor(simplifiedDndDb);
+  .WithReference(db)
+  .WaitFor(db);
 
 await builder.Build().RunAsync();

@@ -10,14 +10,14 @@ internal sealed class CreateCharacterCommandHandler(
   ISpecieRepository specieRepository,
   IClassRepository classRepository,
   IUnitOfWork unitOfWork
-  ) : ICommandHandler<CreateCharacterCommand, Character> {
-  public async Task<Result<Character>> Handle(
+) : ICommandHandler<CreateCharacterCommand, Guid> {
+  public async Task<Result<Guid>> Handle(
     CreateCharacterCommand command, CancellationToken cancellationToken
   ) {
     Debug.Assert(!string.IsNullOrWhiteSpace(command.Name));
     Debug.Assert(!string.IsNullOrWhiteSpace(command.PlayerName));
     Debug.Assert(!string.IsNullOrWhiteSpace(command.SpecieName));
-    Debug.Assert(!string.IsNullOrWhiteSpace(command.ClassName));
+    Debug.Assert(CreateCharacterCommand.ClassesAreValid(command.Classes));
 
     bool characterExists = await characterRepository
       .CheckCharacterExistsAsync(command.Name, command.PlayerName, cancellationToken);
@@ -31,23 +31,25 @@ internal sealed class CreateCharacterCommandHandler(
       return CharacterError.NonExistingSpecie;
     }
 
-    DndClass? mainClass = await classRepository.GetClassAsync(
-      command.ClassName, cancellationToken);
-    if (mainClass is null) {
-      return CharacterError.NonExistingClass;
+    foreach (DndClass dndClass in command.Classes) {
+      bool exists = await classRepository.CheckClassExistsAsync(dndClass.Name, cancellationToken);
+      if (!exists) {
+        return CharacterError.NonExistingClass;
+      }
     }
-    
+
     var character = new Character {
       Id = Guid.CreateVersion7(DateTimeOffset.UtcNow),
       Name = command.Name,
       PlayerName = command.PlayerName,
       Specie = specie,
-      MainClass = mainClass,
+      MainClass = command.Classes.First(),
+      Classes = [..command.Classes.Skip(1)],
     };
 
     characterRepository.SaveCharacter(character);
     await unitOfWork.SaveChangesAsync(cancellationToken);
 
-    return character;
+    return character.Id;
   }
 }

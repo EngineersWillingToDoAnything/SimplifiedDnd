@@ -7,7 +7,7 @@ using SimplifiedDnd.Domain.Characters;
 
 namespace SimplifiedDnd.Application.UnitTests.Characters.CreateCharacter;
 
-public sealed class CreateCharacterCommandHandlerTest {
+public class CreateCharacterCommandHandlerTest {
   private static CancellationToken TestContextToken => TestContext.Current.CancellationToken;
 
   private readonly CreateCharacterCommandHandler _handler;
@@ -23,7 +23,7 @@ public sealed class CreateCharacterCommandHandlerTest {
     _classRepository = Substitute.For<IClassRepository>();
     _unitOfWork = Substitute.For<IUnitOfWork>();
 
-    _handler = new(
+    _handler = new CreateCharacterCommandHandler(
       _characterRepository,
       _specieRepository,
       _classRepository,
@@ -37,7 +37,7 @@ public sealed class CreateCharacterCommandHandlerTest {
       Name = "Batman",
       PlayerName = "Beta tester 1",
       SpecieName = "-",
-      ClassName = "-",
+      Classes = [new DndClass { Name = "-" }],
     };
 
     _characterRepository
@@ -45,7 +45,7 @@ public sealed class CreateCharacterCommandHandlerTest {
       .Returns(true);
 
     // Act
-    Result<Character> result = await _handler.Handle(command, TestContextToken);
+    Result<Guid> result = await _handler.Handle(command, TestContextToken);
 
     // Assert
     result.IsSuccess.Should().BeFalse();
@@ -59,17 +59,17 @@ public sealed class CreateCharacterCommandHandlerTest {
       Name = "-",
       PlayerName = "-",
       SpecieName = "-",
-      ClassName = "-"
+      Classes = [new DndClass { Name = "-" }],
     };
 
     _characterRepository
-      .CheckCharacterExistsAsync(command.Name, command.PlayerName, TestContextToken)
+      .CheckCharacterExistsAsync(Arg.Any<string>(), Arg.Any<string>(), TestContextToken)
       .Returns(false);
     _specieRepository.GetSpecieAsync(command.SpecieName, TestContextToken)
       .Returns((Specie?)null);
 
     // Act
-    Result<Character> result = await _handler.Handle(command, TestContextToken);
+    Result<Guid> result = await _handler.Handle(command, TestContextToken);
 
     // Assert
     result.IsSuccess.Should().BeFalse();
@@ -79,171 +79,243 @@ public sealed class CreateCharacterCommandHandlerTest {
   [Fact(DisplayName = "Returns error if class was not found")]
   public async Task HandlerReturnsErrorWithNonExistingClass() {
     // Arrange
-    var command = new CreateCharacterCommand() {
+    var command = new CreateCharacterCommand {
       Name = "-",
       PlayerName = "-",
       SpecieName = "-",
-      ClassName = "-"
+      Classes = [new DndClass { Name = "-" }],
     };
 
     _characterRepository
-      .CheckCharacterExistsAsync(command.Name, command.PlayerName, TestContextToken)
+      .CheckCharacterExistsAsync(Arg.Any<string>(), Arg.Any<string>(), TestContextToken)
       .Returns(false);
-    _specieRepository.GetSpecieAsync(command.SpecieName, TestContextToken)
-      .Returns(new Specie {
-        Name = "Elf",
-        Size = Size.Small,
-        Speed = 0
-      });
-
-    _classRepository.GetClassAsync(command.ClassName, TestContextToken)
-      .Returns((DndClass?)null);
+    _specieRepository.GetSpecieAsync(Arg.Any<string>(), TestContextToken)
+      .Returns(new Specie { Name = "-", Size = Size.Small, Speed = 0 });
+    _classRepository.CheckClassExistsAsync(Arg.Any<string>(), TestContextToken)
+      .Returns(false);
 
     // Act
-    Result<Character> result = await _handler.Handle(command, TestContextToken);
+    Result<Guid> result = await _handler.Handle(command, TestContextToken);
+
+    // Assert
+    result.Error.Should().Be(CharacterError.NonExistingClass);
+  }
+
+  [Fact(DisplayName = "Returns error if a class was found but another class was not")]
+  public async Task HandlerReturnsErrorWithAnyNonExistingClass() {
+    // Arrange
+    var command = new CreateCharacterCommand {
+      Name = "-",
+      PlayerName = "-",
+      SpecieName = "-",
+      Classes = [
+        new DndClass { Name = "Bard" },
+        new DndClass { Name = "-" }
+      ],
+    };
+
+    _characterRepository
+      .CheckCharacterExistsAsync(Arg.Any<string>(), Arg.Any<string>(), TestContextToken)
+      .Returns(false);
+    _specieRepository.GetSpecieAsync(Arg.Any<string>(), TestContextToken)
+      .Returns(new Specie { Name = "-", Size = Size.Small, Speed = 0 });
+    _classRepository.CheckClassExistsAsync(Arg.Any<string>(), TestContextToken)
+      .Returns(true, false);
+
+    // Act
+    Result<Guid> result = await _handler.Handle(command, TestContextToken);
 
     // Assert
     result.IsSuccess.Should().BeFalse();
     result.Error.Should().Be(CharacterError.NonExistingClass);
   }
 
-  [Fact(DisplayName = "Returns character with given attributes")]
-  public async Task HandlerReturnsCharacterWithGivenAttributes() {
+  [Fact(DisplayName = "Saves character with given name")]
+  public async Task HandlerSavesCharacterWithGivenName() {
     // Arrange
-    var command = new CreateCharacterCommand() {
+    var command = new CreateCharacterCommand {
       Name = "Test",
-      PlayerName = "Test",
-      SpecieName = "human",
-      ClassName = "Bardo"
+      PlayerName = "-",
+      SpecieName = "-",
+      Classes = [new DndClass { Name = "-" }]
     };
 
     _characterRepository
-      .CheckCharacterExistsAsync(command.Name, command.PlayerName, TestContextToken)
+      .CheckCharacterExistsAsync(Arg.Any<string>(), Arg.Any<string>(), TestContextToken)
       .Returns(false);
-
-    var specie = new Specie {
-      Name = "human",
-      Size = Size.Tiny,
-      Speed = 1,
-    };
-    _specieRepository.GetSpecieAsync(command.SpecieName, TestContextToken)
-      .Returns(specie);
-    
-    var mainClass = new DndClass {
-      Name = "Bardo",
-      Level = Level.MaxLevel
-    };
-    _classRepository.GetClassAsync(command.ClassName, TestContextToken)
-      .Returns(mainClass);
-
-    // Act
-    Result<Character> result = await _handler.Handle(command, TestContextToken);
-
-    // Assert
-    result.IsSuccess.Should().BeTrue();
-    result.Value.Name.Should().Be(command.Name);
-    result.Value.PlayerName.Should().Be(command.PlayerName);
-    result.Value.Specie.Should().BeEquivalentTo(specie);
-    result.Value.MainClass.Should().BeEquivalentTo(mainClass);
-  }
-
-  [Fact(DisplayName = "Returns character with guid version 7")]
-  public async Task HandlerReturnsCharacterWithGuidV7() {
-    // Arrange
-    var command = new CreateCharacterCommand() {
-      Name = "Test",
-      PlayerName = "Test",
-      SpecieName = "human",
-      ClassName = "Bardo",
-    };
-
-    _characterRepository
-      .CheckCharacterExistsAsync(command.Name, command.PlayerName, TestContextToken)
-      .Returns(false);
-
-    _specieRepository.GetSpecieAsync(command.SpecieName, TestContextToken)
-      .Returns(new Specie {
-        Name = "human",
-        Size = Size.Tiny,
-        Speed = 1,
-      });
-    
-    _classRepository.GetClassAsync(command.ClassName, TestContextToken)
-      .Returns(new DndClass {
-        Name = "Bardo",
-        Level = Level.MaxLevel
-      });
-
-    // Act
-    Result<Character> result = await _handler.Handle(command, TestContextToken);
-
-    // Assert
-    result.IsSuccess.Should().BeTrue();
-    result.Value.Id.Version.Should().Be(7);
-  }
-
-  [Fact(DisplayName = "Saves character to repository")]
-  public async Task HandlerSavesCharacterToRepository() {
-    // Arrange
-    var command = new CreateCharacterCommand() {
-      Name = "Test",
-      PlayerName = "Test",
-      SpecieName = "human",
-      ClassName = "Bardo",
-    };
-
-    _characterRepository
-      .CheckCharacterExistsAsync(command.Name, command.PlayerName, TestContextToken)
-      .Returns(false);
-
-    _specieRepository.GetSpecieAsync(command.SpecieName, TestContextToken)
-      .Returns(new Specie {
-        Name = "human",
-        Size = Size.Tiny,
-        Speed = 1,
-      });
-    
-    _classRepository.GetClassAsync(command.ClassName, TestContextToken)
-      .Returns(new DndClass {
-        Name = "Bardo",
-        Level = Level.MaxLevel
-      });
+    _specieRepository.GetSpecieAsync(Arg.Any<string>(), TestContextToken)
+      .Returns(new Specie { Name = "-", Size = Size.Tiny, Speed = 1, });
+    _classRepository.CheckClassExistsAsync(Arg.Any<string>(), TestContextToken)
+      .Returns(true);
 
     // Act
     await _handler.Handle(command, TestContextToken);
 
     // Assert
     _characterRepository.Received(1)
-      .SaveCharacter(Arg.Any<Character>());
+      .SaveCharacter(Arg.Is<Character>(c => c.Name == command.Name));
+  }
+
+  [Fact(DisplayName = "Saves character with given player name")]
+  public async Task HandlerSavesCharacterWithGivenPlayerName() {
+    // Arrange
+    var command = new CreateCharacterCommand {
+      Name = "-",
+      PlayerName = "Test",
+      SpecieName = "-",
+      Classes = [new DndClass { Name = "-" }]
+    };
+
+    _characterRepository
+      .CheckCharacterExistsAsync(Arg.Any<string>(), Arg.Any<string>(), TestContextToken)
+      .Returns(false);
+    _specieRepository.GetSpecieAsync(Arg.Any<string>(), TestContextToken)
+      .Returns(new Specie { Name = "-", Size = Size.Tiny, Speed = 1, });
+    _classRepository.CheckClassExistsAsync(Arg.Any<string>(), TestContextToken)
+      .Returns(true);
+
+    // Act
+    await _handler.Handle(command, TestContextToken);
+
+    // Assert
+    _characterRepository.Received(1)
+      .SaveCharacter(Arg.Is<Character>(c => c.PlayerName == command.PlayerName));
+  }
+
+  [Fact(DisplayName = "Saves character with given specie")]
+  public async Task HandlerSavesCharacterWithGivenSpecie() {
+    // Arrange
+    var command = new CreateCharacterCommand {
+      Name = "-",
+      PlayerName = "-",
+      SpecieName = "human",
+      Classes = [new DndClass { Name = "-" }]
+    };
+    var expectedSpecie = new Specie {
+      Name = "human",
+      Size = Size.Tiny,
+      Speed = 1,
+    };
+
+    _characterRepository
+      .CheckCharacterExistsAsync(Arg.Any<string>(), Arg.Any<string>(), TestContextToken)
+      .Returns(false);
+    _specieRepository.GetSpecieAsync(Arg.Any<string>(), TestContextToken)
+      .Returns(expectedSpecie);
+    _classRepository.CheckClassExistsAsync(Arg.Any<string>(), TestContextToken)
+      .Returns(true);
+
+    // Act
+    await _handler.Handle(command, TestContextToken);
+
+    // Assert
+    _characterRepository.Received(1)
+      .SaveCharacter(Arg.Is<Character>(c => c.Specie == expectedSpecie));
+  }
+
+  [Fact(DisplayName = "Saves character with main class as first class")]
+  public async Task HandlerSavesCharacterWithMainClassFromFirstClass() {
+    // Arrange
+    var command = new CreateCharacterCommand {
+      Name = "-",
+      PlayerName = "-",
+      SpecieName = "-",
+      Classes = [new DndClass { Name = "Bard" }]
+    };
+
+    _characterRepository
+      .CheckCharacterExistsAsync(Arg.Any<string>(), Arg.Any<string>(), TestContextToken)
+      .Returns(false);
+    _specieRepository.GetSpecieAsync(Arg.Any<string>(), TestContextToken)
+      .Returns(new Specie { Name = "-", Size = Size.Tiny, Speed = 1, });
+    _classRepository.CheckClassExistsAsync(Arg.Any<string>(), TestContextToken)
+      .Returns(true);
+
+    // Act
+    await _handler.Handle(command, TestContextToken);
+
+    // Assert
+    _characterRepository.Received(1)
+      .SaveCharacter(Arg.Is<Character>(c => c.MainClass == command.Classes.First()));
+  }
+
+  [Fact(DisplayName = "Saves character with multi class from extra classes")]
+  public async Task HandlerSavesCharacterWithClassesFromRestOfClasses() {
+    // Arrange
+    var command = new CreateCharacterCommand() {
+      Name = "-",
+      PlayerName = "-",
+      SpecieName = "-",
+      Classes = [
+        new DndClass { Name = "-" },
+        new DndClass { Name = "Barbarian" },
+        new DndClass { Name = "Bard" }
+      ]
+    };
+    IEnumerable<DndClass> expectedClasses = command.Classes.Skip(1);
+
+    _characterRepository
+      .CheckCharacterExistsAsync(Arg.Any<string>(), Arg.Any<string>(), TestContextToken)
+      .Returns(false);
+    _specieRepository.GetSpecieAsync(Arg.Any<string>(), TestContextToken)
+      .Returns(new Specie { Name = "-", Size = Size.Tiny, Speed = 1, });
+    _classRepository.CheckClassExistsAsync(Arg.Any<string>(), TestContextToken)
+      .Returns(true, true, true);
+
+    // Act
+    await _handler.Handle(command, TestContextToken);
+
+    // Assert
+    _characterRepository.Received(1)
+      .SaveCharacter(Arg.Is<Character>(character =>
+        character.Classes.All(c => expectedClasses.Contains(c)) &&
+        expectedClasses.All(c => character.Classes.Contains(c))));
+  }
+
+  [Fact(DisplayName = "Returns guid version 7 of the character")]
+  public async Task HandlerReturnsGuidV7OfTheCharacter() {
+    // Arrange
+    var command = new CreateCharacterCommand {
+      Name = "-",
+      PlayerName = "-",
+      SpecieName = "-",
+      Classes = [new DndClass { Name = "-" }]
+    };
+
+    _characterRepository
+      .CheckCharacterExistsAsync(command.Name, command.PlayerName, TestContextToken)
+      .Returns(false);
+    _specieRepository.GetSpecieAsync(command.SpecieName, TestContextToken)
+      .Returns(new Specie { Name = "-", Size = Size.Tiny, Speed = 1, });
+    _classRepository.CheckClassExistsAsync(Arg.Any<string>(), TestContextToken)
+      .Returns(true);
+
+    // Act
+    Result<Guid> result = await _handler.Handle(command, TestContextToken);
+
+    // Assert
+    result.IsSuccess.Should().BeTrue();
+    result.Value.Version.Should().Be(7);
   }
 
   [Fact(DisplayName = "Handler saves changes in one iteration (unit of work)")]
   public async Task HandlerSavesChangesInOneIteration() {
     // Arrange
     var command = new CreateCharacterCommand() {
-      Name = "Test",
-      PlayerName = "Test",
-      SpecieName = "human",
-      ClassName = "Bardo",
+      Name = "-",
+      PlayerName = "-",
+      SpecieName = "-",
+      Classes = [new DndClass { Name = "-" }]
     };
 
     _characterRepository
-      .CheckCharacterExistsAsync(command.Name, command.PlayerName, TestContextToken)
+      .CheckCharacterExistsAsync(Arg.Any<string>(), Arg.Any<string>(), TestContextToken)
       .Returns(false);
+    _specieRepository.GetSpecieAsync(Arg.Any<string>(), TestContextToken)
+      .Returns(new Specie { Name = "-", Size = Size.Tiny, Speed = 1, });
+    _classRepository.CheckClassExistsAsync(Arg.Any<string>(), TestContextToken)
+      .Returns(true);
 
-    _specieRepository.GetSpecieAsync(command.SpecieName, TestContextToken)
-      .Returns(new Specie {
-        Name = "human",
-        Size = Size.Tiny,
-        Speed = 1,
-      });
-
-    _classRepository.GetClassAsync(command.ClassName, TestContextToken)
-      .Returns(new DndClass {
-        Name = "Bardo",
-        Level = Level.MaxLevel
-      });
-    
     // Act
     await _handler.Handle(command, TestContextToken);
 

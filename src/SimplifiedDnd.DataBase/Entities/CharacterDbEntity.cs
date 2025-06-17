@@ -10,7 +10,7 @@ internal class CharacterDbEntity {
   public int SpecieId { get; init; }
   public SpecieDbEntity? Specie { get; init; }
 
-  public ICollection<CharacterClassDbEntity> Classes { get; init; } = [];
+  public ICollection<CharacterClassDbEntity> CharacterClasses { get; init; } = [];
 
   internal Character ToDomain() {
     return new Character {
@@ -18,9 +18,9 @@ internal class CharacterDbEntity {
       Name = Name,
       PlayerName = PlayerName,
       Specie = Specie?.ToDomain(),
-      MainClass = Classes.SingleOrDefault(c => c.IsMainClass)?.Class?.ToDomain(),
+      MainClass = CharacterClasses.SingleOrDefault(c => c.IsMainClass)?.Class?.ToDomain(),
       Classes = [
-        ..Classes
+        ..CharacterClasses
           .Where(c => c is { IsMainClass: false, Class: not null })
           .Select(c => c.Class!.ToDomain())
       ]
