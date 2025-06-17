@@ -37,14 +37,53 @@ public class CreateCharacterEndpointTest(
     DisplayName = "Returns 400 Bad Request with empty character name",
     Explicit = false)]
   [ClassData(typeof(WhiteSpaceData))]
-  public async Task EndpointReturnsBadRequestWithEmptyCharacterName(string characterName) {
+  public async Task EndpointReturnsBadRequestWithEmptyCharacterName(string playerName) {
     // Arrange
     HttpClient client = _factory.CreateHttpClient(ApiResourceName);
     string requestBody =
       $$"""
         {
-          "name": "{{characterName}}",
-          "specie_name": "-"
+          "name": "{{playerName}}",
+          "player_name": "-",
+          "specie_name": "-",
+          "classes": [
+            {
+              "name": "-",
+              "level": 1
+            }
+          ]
+        }
+        """;
+    using var content = new StringContent(
+      requestBody, Encoding.UTF8, MediaTypeNames.Application.Json);
+
+    //  Act
+    HttpResponseMessage response = await client.PostAsync(
+      new Uri(Path, UriKind.Relative), content, TestContextToken);
+
+    // Arrange
+    response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+  }
+
+  [Theory(
+    DisplayName = "Returns 400 Bad Request with empty player name",
+    Explicit = false)]
+  [ClassData(typeof(WhiteSpaceData))]
+  public async Task EndpointReturnsBadRequestWithEmptyPlayerName(string playerName) {
+    // Arrange
+    HttpClient client = _factory.CreateHttpClient(ApiResourceName);
+    string requestBody =
+      $$"""
+        {
+          "name": "-",
+          "player_name": "{{playerName}}",
+          "specie_name": "-",
+          "classes": [
+            {
+              "name": "-",
+              "level": 1
+            }
+          ]
         }
         """;
     using var content = new StringContent(
@@ -69,6 +108,7 @@ public class CreateCharacterEndpointTest(
       $$"""
         {
           "name": "-",
+          "player_name": "-",
           "specie_name": "{{specieName}}"
         }
         """;
@@ -84,16 +124,23 @@ public class CreateCharacterEndpointTest(
   }
 
   [Fact(
-    DisplayName = "Returns 201 Created with valid request",
+    DisplayName = "Returns 404 Not Found with invalid specie",
     Explicit = false)]
-  public async Task EndpointReturnsCreatedWithValidRequest() {
+  public async Task EndpointReturnsNotFoundWithInvalidSpecie() {
     // Arrange
     HttpClient client = _factory.CreateHttpClient(ApiResourceName);
     const string requestBody =
       """
       {
         "name": "-",
-        "specie_name": "-"
+        "player_name": "-",
+        "specie_name": "-",
+        "classes": [
+          {
+            "name": "-",
+            "level": 1
+          }
+        ]
       }
       """;
     using var content = new StringContent(
@@ -104,6 +151,135 @@ public class CreateCharacterEndpointTest(
       new Uri(Path, UriKind.Relative), content, TestContextToken);
 
     // Arrange
+    response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+  }
+
+  [Fact(
+    DisplayName = "Returns 404 Not Found with invalid class name",
+    Explicit = false)]
+  public async Task EndpointReturnsNotFoundWithInvalidClass() {
+    // Arrange
+    HttpClient client = _factory.CreateHttpClient(ApiResourceName);
+    const string requestBody =
+      """
+      {
+        "name": "-",
+        "player_name": "-",
+        "specie_name": "Dragonborn",
+        "classes": [
+          {
+            "name": "-",
+            "level": 1
+          }
+        ]
+      }
+      """;
+    using var content = new StringContent(
+      requestBody, Encoding.UTF8, MediaTypeNames.Application.Json);
+
+    //  Act
+    HttpResponseMessage response = await client.PostAsync(
+      new Uri(Path, UriKind.Relative), content, TestContextToken);
+
+    // Arrange
+    response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+  }
+
+  [Fact(
+    DisplayName = "Returns 404 Not Found with one valid class and at least one invalid class",
+    Explicit = false)]
+  public async Task EndpointReturnsNotFoundWithAtLeastOneInvalidClass() {
+    // Arrange
+    HttpClient client = _factory.CreateHttpClient(ApiResourceName);
+    const string requestBody =
+      """
+      {
+        "name": "-",
+        "player_name": "-",
+        "specie_name": "Dragonborn",
+        "classes": [
+          {
+            "name": "Artificer",
+            "level": 1
+          },
+          {
+            "name": "-",
+            "level": 1
+          }
+        ]
+      }
+      """;
+    using var content = new StringContent(
+      requestBody, Encoding.UTF8, MediaTypeNames.Application.Json);
+
+    //  Act
+    HttpResponseMessage response = await client.PostAsync(
+      new Uri(Path, UriKind.Relative), content, TestContextToken);
+
+    // Arrange
+    response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+  }
+
+  [Fact(
+    DisplayName = "Returns 201 Created with valid request",
+    Explicit = false)]
+  public async Task EndpointReturnsCreatedWithValidRequest() {
+    // Arrange
+    HttpClient client = _factory.CreateHttpClient(ApiResourceName);
+    string requestBody =
+      $$"""
+        {
+          "name": "{{Guid.CreateVersion7()}}",
+          "player_name": "-",
+          "specie_name": "human",
+          "classes": [
+            {
+              "name": "barbarian",
+              "level": 1
+            }
+          ]
+        }
+        """;
+    using var content = new StringContent(
+      requestBody, Encoding.UTF8, MediaTypeNames.Application.Json);
+
+    //  Act
+    HttpResponseMessage response = await client.PostAsync(
+      new Uri(Path, UriKind.Relative), content, TestContextToken);
+
+    // Arrange
     response.StatusCode.Should().Be(HttpStatusCode.Created);
+  }
+
+  [Fact(
+    DisplayName = "Returns character GUID with valid request",
+    Explicit = false)]
+  public async Task EndpointReturnsGuidWithValidRequest() {
+    // Arrange
+    HttpClient client = _factory.CreateHttpClient(ApiResourceName);
+    string requestBody =
+      $$"""
+        {
+          "name": "{{Guid.CreateVersion7()}}",
+          "player_name": "-",
+          "specie_name": "human",
+          "classes": [
+            {
+              "name": "barbarian",
+              "level": 1
+            }
+          ]
+        }
+        """;
+    using var content = new StringContent(
+      requestBody, Encoding.UTF8, MediaTypeNames.Application.Json);
+
+    //  Act
+    HttpResponseMessage response = await client.PostAsync(
+      new Uri(Path, UriKind.Relative), content, TestContextToken);
+
+    // Arrange
+    string result = await response.Content.ReadAsStringAsync(TestContextToken);
+    Guid.TryParse(result.Trim('"'), out _).Should().BeTrue();
   }
 }

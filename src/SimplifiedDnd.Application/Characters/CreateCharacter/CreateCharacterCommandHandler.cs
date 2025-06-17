@@ -10,8 +10,8 @@ internal sealed class CreateCharacterCommandHandler(
   ISpecieRepository specieRepository,
   IClassRepository classRepository,
   IUnitOfWork unitOfWork
-) : ICommandHandler<CreateCharacterCommand, Character> {
-  public async Task<Result<Character>> Handle(
+) : ICommandHandler<CreateCharacterCommand, Guid> {
+  public async Task<Result<Guid>> Handle(
     CreateCharacterCommand command, CancellationToken cancellationToken
   ) {
     Debug.Assert(!string.IsNullOrWhiteSpace(command.Name));
@@ -50,6 +50,6 @@ internal sealed class CreateCharacterCommandHandler(
     characterRepository.SaveCharacter(character);
     await unitOfWork.SaveChangesAsync(cancellationToken);
 
-    return character;
+    return character.Id;
   }
 }
