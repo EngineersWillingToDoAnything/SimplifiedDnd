@@ -127,6 +127,9 @@ internal sealed class PostgreSqlCharacterRepository(
         nameof(Character.Specie) => order.Ascending
           ? queryable.OrderBy(c => c.Specie!.Name)
           : queryable.OrderByDescending(c => c.Specie!.Name),
+        nameof(Character.MainClass) => order.Ascending
+          ? queryable.OrderBy(c => c.CharacterClasses.Single(cc => cc.IsMainClass).Class!.Name)
+          : queryable.OrderByDescending(c => c.CharacterClasses.Single(cc => cc.IsMainClass).Class!.Name),
         _ => order.Ascending
           ? queryable.OrderBy(c => c.Id)
           : queryable.OrderByDescending(c => c.Id)

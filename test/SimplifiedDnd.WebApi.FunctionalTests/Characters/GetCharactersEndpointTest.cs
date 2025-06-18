@@ -19,7 +19,7 @@ public class GetCharactersEndpointTest(
 
   [Fact(
     DisplayName = "Returns 200 OK without query parameters",
-    Explicit = false)]
+    Explicit = true)]
   public async Task EndpointReturnsOkWithoutParameters() {
     // Arrange
     HttpClient client = _factory.CreateHttpClient(ApiResourceName);
@@ -34,7 +34,7 @@ public class GetCharactersEndpointTest(
 
   [Fact(
     DisplayName = "Returns a list of characters without query parameters",
-    Explicit = false)]
+    Explicit = true)]
   public async Task EndpointReturnsListWithoutParameters() {
     // Arrange
     HttpClient client = _factory.CreateHttpClient(ApiResourceName);
@@ -49,7 +49,7 @@ public class GetCharactersEndpointTest(
 
   [Fact(
     DisplayName = "Returns 200 OK with infinite pagination (-1, -1)",
-    Explicit = false)]
+    Explicit = true)]
   public async Task EndpointReturnsOkWithInfinitePagination() {
     // Arrange
     var query = new Dictionary<string, string?> {
@@ -69,7 +69,7 @@ public class GetCharactersEndpointTest(
 
   [Fact(
     DisplayName = "Returns 400 Bad Request with invalid pagination",
-    Explicit = false)]
+    Explicit = true)]
   public async Task EndpointReturnsBadRequestWithInvalidPagination() {
     // Arrange
     var query = new Dictionary<string, string?> {
@@ -89,7 +89,7 @@ public class GetCharactersEndpointTest(
 
   [Fact(
     DisplayName = "Returns validation error with invalid pagination",
-    Explicit = false)]
+    Explicit = true)]
   public async Task EndpointReturnsValidationErrorWithInvalidPagination() {
     // Arrange
     var query = new Dictionary<string, string?> {
@@ -114,7 +114,7 @@ public class GetCharactersEndpointTest(
 
   [Theory(
     DisplayName = "Returns 200 OK with valid order parameter",
-    Explicit = false)]
+    Explicit = true)]
   [InlineData("id")]
   [InlineData("name")]
   [InlineData("mainClass")]
@@ -137,7 +137,7 @@ public class GetCharactersEndpointTest(
 
   [Fact(
     DisplayName = "Returns validation error with invalid order",
-    Explicit = false)]
+    Explicit = true)]
   public async Task EndpointReturnsValidationErrorWithInvalidOrder() {
     // Arrange
     var query = new Dictionary<string, string?> {
@@ -162,7 +162,7 @@ public class GetCharactersEndpointTest(
 
   [Fact(
     DisplayName = "Returns 200 OK with part of the character name to filter",
-    Explicit = false)]
+    Explicit = true)]
   public async Task EndpointReturnsOkWithPartOfTheCharacterNameToFilter() {
     var query = new Dictionary<string, string?> {
       { "filter-name", "bruce" }
@@ -180,7 +180,7 @@ public class GetCharactersEndpointTest(
 
   [Fact(
     DisplayName = "Returns 200 OK with the name of the specie to filter",
-    Explicit = false)]
+    Explicit = true)]
   public async Task EndpointReturnsOkWithTheNameOfTheSpecieToFilter() {
     var query = new Dictionary<string, string?> {
       { "filter-species", "dwarf" },
@@ -198,7 +198,7 @@ public class GetCharactersEndpointTest(
 
   [Fact(
     DisplayName = "Returns 200 OK with more than one specie to filter",
-    Explicit = false)]
+    Explicit = true)]
   public async Task EndpointReturnsOkWithMoreThanOneSpecieToFilter() {
     var query = new Dictionary<string, string?> {
       { "filter-species", "human,tiefling,elf" },
@@ -216,7 +216,7 @@ public class GetCharactersEndpointTest(
 
   [Fact(
     DisplayName = "Returns 200 OK with the name of the class to filter",
-    Explicit = false)]
+    Explicit = true)]
   public async Task EndpointReturnsOkWithTheNameOfTheClassToFilter() {
     var query = new Dictionary<string, string?> {
       { "filter-classes", "fighter" },
@@ -234,7 +234,7 @@ public class GetCharactersEndpointTest(
 
   [Fact(
     DisplayName = "Returns 200 OK with more than one class to filter",
-    Explicit = false)]
+    Explicit = true)]
   public async Task EndpointReturnsOkWithMoreThanOneClassToFilter() {
     var query = new Dictionary<string, string?> {
       { "filter-classes", "paladin,monk,ranger" },
@@ -252,7 +252,7 @@ public class GetCharactersEndpointTest(
 
   [Theory(
     DisplayName = "Returns a list of characters with all query parameters",
-    Explicit = false)]
+    Explicit = true)]
   [InlineData("id")]
   [InlineData("name")]
   [InlineData("mainClass")]

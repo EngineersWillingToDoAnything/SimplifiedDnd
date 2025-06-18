@@ -19,7 +19,7 @@ public class CreateCharacterEndpointTest(
 
   [Fact(
     DisplayName = "Returns 400 Bad Request with empty body",
-    Explicit = false)]
+    Explicit = true)]
   public async Task EndpointReturnsBadRequestWithEmptyBody() {
     // Arrange
     HttpClient client = _factory.CreateHttpClient(ApiResourceName);
@@ -36,7 +36,7 @@ public class CreateCharacterEndpointTest(
 
   [Fact(
     DisplayName = "Returns validation error with empty body",
-    Explicit = false)]
+    Explicit = true)]
   public async Task EndpointReturnsValidationErrorWithEmptyBody() {
     // Arrange
     HttpClient client = _factory.CreateHttpClient(ApiResourceName);
@@ -60,7 +60,7 @@ public class CreateCharacterEndpointTest(
 
   [Theory(
     DisplayName = "Returns 400 Bad Request with empty character name",
-    Explicit = false)]
+    Explicit = true)]
   [ClassData(typeof(WhiteSpaceData))]
   public async Task EndpointReturnsBadRequestWithEmptyCharacterName(string characterName) {
     // Arrange
@@ -92,7 +92,7 @@ public class CreateCharacterEndpointTest(
 
   [Theory(
     DisplayName = "Returns validation error with empty character name",
-    Explicit = false)]
+    Explicit = true)]
   [ClassData(typeof(WhiteSpaceData))]
   public async Task EndpointReturnsValidationErrorWithEmptyCharacterName(string characterName) {
     // Arrange
@@ -129,7 +129,7 @@ public class CreateCharacterEndpointTest(
 
   [Theory(
     DisplayName = "Returns 400 Bad Request with empty player name",
-    Explicit = false)]
+    Explicit = true)]
   [ClassData(typeof(WhiteSpaceData))]
   public async Task EndpointReturnsBadRequestWithEmptyPlayerName(string playerName) {
     // Arrange
@@ -161,7 +161,7 @@ public class CreateCharacterEndpointTest(
 
   [Theory(
     DisplayName = "Returns validation error with empty player name",
-    Explicit = false)]
+    Explicit = true)]
   [ClassData(typeof(WhiteSpaceData))]
   public async Task EndpointReturnsValidationErrorWithEmptyPlayerName(string playerName) {
     // Arrange
@@ -198,7 +198,7 @@ public class CreateCharacterEndpointTest(
 
   [Theory(
     DisplayName = "Returns 400 Bad Request with empty specie name",
-    Explicit = false)]
+    Explicit = true)]
   [ClassData(typeof(WhiteSpaceData))]
   public async Task EndpointReturnsBadRequestWithEmptySpecieName(string specieName) {
     // Arrange
@@ -230,7 +230,7 @@ public class CreateCharacterEndpointTest(
 
   [Theory(
     DisplayName = "Returns validation error with empty specie name",
-    Explicit = false)]
+    Explicit = true)]
   [ClassData(typeof(WhiteSpaceData))]
   public async Task EndpointReturnsValidationErrorWithEmptySpecieName(string specieName) {
     // Arrange
@@ -267,7 +267,7 @@ public class CreateCharacterEndpointTest(
 
   [Theory(
     DisplayName = "Returns 400 Bad Request with empty class name",
-    Explicit = false)]
+    Explicit = true)]
   [ClassData(typeof(WhiteSpaceData))]
   public async Task EndpointReturnsBadRequestWithEmptyClassName(string className) {
     // Arrange
@@ -299,7 +299,7 @@ public class CreateCharacterEndpointTest(
 
   [Theory(
     DisplayName = "Returns validation error with empty class name",
-    Explicit = false)]
+    Explicit = true)]
   [ClassData(typeof(WhiteSpaceData))]
   public async Task EndpointReturnsValidationErrorWithEmptyClassName(string className) {
     // Arrange
@@ -336,7 +336,7 @@ public class CreateCharacterEndpointTest(
 
   [Fact(
     DisplayName = "Returns 400 Bad Request with class level below minimum",
-    Explicit = false)]
+    Explicit = true)]
   public async Task EndpointReturnsBadRequestWithClassLevelBelowMinimum() {
     // Arrange
     HttpClient client = _factory.CreateHttpClient(ApiResourceName);
@@ -367,7 +367,7 @@ public class CreateCharacterEndpointTest(
 
   [Fact(
     DisplayName = "Returns validation error with class level below minimum",
-    Explicit = false)]
+    Explicit = true)]
   public async Task EndpointReturnsValidationErrorWithClassLevelBelowMinimum() {
     // Arrange
     HttpClient client = _factory.CreateHttpClient(ApiResourceName);
@@ -403,7 +403,7 @@ public class CreateCharacterEndpointTest(
 
   [Fact(
     DisplayName = "Returns 400 Bad Request with class level above maximum",
-    Explicit = false)]
+    Explicit = true)]
   public async Task EndpointReturnsBadRequestWithClassLevelAboveMaximum() {
     // Arrange
     HttpClient client = _factory.CreateHttpClient(ApiResourceName);
@@ -434,7 +434,7 @@ public class CreateCharacterEndpointTest(
 
   [Fact(
     DisplayName = "Returns validation error with class level above maximum",
-    Explicit = false)]
+    Explicit = true)]
   public async Task EndpointReturnsValidationErrorWithClassLevelAboveMinimum() {
     // Arrange
     HttpClient client = _factory.CreateHttpClient(ApiResourceName);
@@ -470,7 +470,7 @@ public class CreateCharacterEndpointTest(
 
   [Fact(
     DisplayName = "Returns 400 Bad Request with repeated class name",
-    Explicit = false)]
+    Explicit = true)]
   public async Task EndpointReturnsBadRequestWithRepeatedClassName() {
     // Arrange
     HttpClient client = _factory.CreateHttpClient(ApiResourceName);
@@ -506,7 +506,7 @@ public class CreateCharacterEndpointTest(
 
   [Fact(
     DisplayName = "Returns validation error with repeated class name",
-    Explicit = false)]
+    Explicit = true)]
   public async Task EndpointReturnsValdiationErrorWithRepeatedClassName() {
     // Arrange
     HttpClient client = _factory.CreateHttpClient(ApiResourceName);
@@ -547,7 +547,7 @@ public class CreateCharacterEndpointTest(
 
   [Fact(
     DisplayName = "Returns 404 Not Found with non existing specie",
-    Explicit = false)]
+    Explicit = true)]
   public async Task EndpointReturnsNotFoundWithNonExistingSpecie() {
     // Arrange
     HttpClient client = _factory.CreateHttpClient(ApiResourceName);
@@ -578,7 +578,7 @@ public class CreateCharacterEndpointTest(
 
   [Fact(
     DisplayName = "Returns 404 Not Found with non existing class name",
-    Explicit = false)]
+    Explicit = true)]
   public async Task EndpointReturnsNotFoundWithNonExistingClass() {
     // Arrange
     HttpClient client = _factory.CreateHttpClient(ApiResourceName);
@@ -609,7 +609,7 @@ public class CreateCharacterEndpointTest(
 
   [Fact(
     DisplayName = "Returns 404 Not Found with at least one non existing class",
-    Explicit = false)]
+    Explicit = true)]
   public async Task EndpointReturnsNotFoundWithAtLeastOneNonExistingClass() {
     // Arrange
     HttpClient client = _factory.CreateHttpClient(ApiResourceName);
@@ -644,7 +644,7 @@ public class CreateCharacterEndpointTest(
 
   [Fact(
     DisplayName = "Returns 409 Conflict if character already exists",
-    Explicit = false)]
+    Explicit = true)]
   public async Task EndpointReturnsConflictWithExistingCharacter() {
     // Arrange
     HttpClient client = _factory.CreateHttpClient(ApiResourceName);
@@ -676,7 +676,7 @@ public class CreateCharacterEndpointTest(
 
   [Fact(
     DisplayName = "Returns 201 Created with valid request",
-    Explicit = false)]
+    Explicit = true)]
   public async Task EndpointReturnsCreatedWithValidRequest() {
     // Arrange
     HttpClient client = _factory.CreateHttpClient(ApiResourceName);
@@ -707,7 +707,7 @@ public class CreateCharacterEndpointTest(
 
   [Fact(
     DisplayName = "Returns character GUID with valid request",
-    Explicit = false)]
+    Explicit = true)]
   public async Task EndpointReturnsGuidWithValidRequest() {
     // Arrange
     HttpClient client = _factory.CreateHttpClient(ApiResourceName);
