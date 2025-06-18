@@ -1,6 +1,13 @@
-name: Run Functional Tests
+name: pass functional tests
+
 on:
   workflow_dispatch:
+    inputs:
+      run_tests:
+        description: 'Run functional tests?'
+        required: true
+        type: boolean
+        default: true
 
 env:
   DOTNET_VERSION: '9.0.300' # The .NET SDK version to use
@@ -10,7 +17,6 @@ jobs:
 
     name: Pass backend functional tests
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch'
     steps:
     - uses: actions/checkout@v4
     - name: Setup .NET Core
