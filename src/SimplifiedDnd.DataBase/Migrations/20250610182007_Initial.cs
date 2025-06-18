@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using System;
 using System.Diagnostics;
@@ -9,7 +9,9 @@ namespace SimplifiedDnd.DataBase.Migrations;
 
 /// <inheritdoc />
 internal partial class Initial : Migration {
-  /// <inheritdoc />
+  /// <summary>
+  /// Applies the initial database schema for the application, creating tables for classes, species, characters, and their relationships, along with relevant indexes and constraints.
+  /// </summary>
   protected override void Up(MigrationBuilder migrationBuilder) {
     Debug.Assert(migrationBuilder is not null);
 
@@ -102,7 +104,9 @@ internal partial class Initial : Migration {
       unique: true);
   }
 
-  /// <inheritdoc />
+  /// <summary>
+  /// Reverts the initial database schema by dropping the character_classes, characters, classes, and species tables.
+  /// </summary>
   protected override void Down(MigrationBuilder migrationBuilder) {
     Debug.Assert(migrationBuilder is not null);
 

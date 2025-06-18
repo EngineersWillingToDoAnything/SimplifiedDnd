@@ -5,6 +5,10 @@ using SimplifiedDnd.DataBase.Entities;
 namespace SimplifiedDnd.DataBase.Configurations;
 
 internal class SpecieDbEntityConfiguration : IEntityTypeConfiguration<SpecieDbEntity> {
+  /// <summary>
+  /// Configures the Entity Framework Core mapping for the <see cref="SpecieDbEntity"/> entity, including table name, primary key, unique constraints, and column properties.
+  /// </summary>
+  /// <param name="builder">The builder used to configure the <see cref="SpecieDbEntity"/> entity type.</param>
   public void Configure(EntityTypeBuilder<SpecieDbEntity> builder) {
     builder.ToTable("species");
 

@@ -4,6 +4,12 @@ using SimplifiedDnd.Domain.Characters;
 namespace SimplifiedDnd.Application.Characters.CreateCharacter;
 
 internal sealed class CreateCharacterCommandValidator : AbstractValidator<CreateCharacterCommand> {
+  /// <summary>
+  /// Initializes a new instance of the <see cref="CreateCharacterCommandValidator"/> class, defining validation rules for <see cref="CreateCharacterCommand"/>.
+  /// </summary>
+  /// <remarks>
+  /// Enforces that the character name, player name, and specie name are not empty. Validates that each class in the command has a non-empty name and a level within allowed bounds, and ensures all class names are unique (case-insensitive).
+  /// </remarks>
   public CreateCharacterCommandValidator() {
     RuleFor(command => command.Name)
       .NotEmpty()

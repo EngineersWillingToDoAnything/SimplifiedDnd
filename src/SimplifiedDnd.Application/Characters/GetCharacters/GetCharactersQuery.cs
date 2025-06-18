@@ -10,6 +10,11 @@ public record GetCharactersQuery : IQuery<PaginatedResult<Character>> {
   public Order? Order { get; init; }
   public CharacterFilter Filter { get; init; } = new();
 
+  /// <summary>
+  /// Determines whether the provided order key is valid for character queries.
+  /// </summary>
+  /// <param name="order">The order parameter to validate.</param>
+  /// <returns>True if the order is null or its key matches a valid character property; otherwise, false.</returns>
   public static bool OrderIsValid(Order? order) {
     List<string> validOrderKeys = [
       nameof(Character.Id),
@@ -21,6 +26,11 @@ public record GetCharactersQuery : IQuery<PaginatedResult<Character>> {
            validOrderKeys.Contains(order.Key, StringComparer.OrdinalIgnoreCase);
   }
 
+  /// <summary>
+  /// Determines whether the specified page parameter is either null or represents a valid page.
+  /// </summary>
+  /// <param name="page">The page parameter to validate.</param>
+  /// <returns>True if the page is null or valid; otherwise, false.</returns>
   public static bool PageIsValid(Page? page) {
     return page is null || page.IsValid();
   }

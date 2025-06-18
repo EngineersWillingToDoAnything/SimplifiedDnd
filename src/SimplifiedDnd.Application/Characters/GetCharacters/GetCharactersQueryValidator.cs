@@ -3,6 +3,9 @@ using FluentValidation;
 namespace SimplifiedDnd.Application.Characters.GetCharacters;
 
 internal sealed class GetCharactersQueryValidator : AbstractValidator<GetCharactersQuery> {
+  /// <summary>
+  /// Initializes a new instance of the <see cref="GetCharactersQueryValidator"/> class, defining validation rules for pagination, ordering, and filtering parameters in a <see cref="GetCharactersQuery"/>.
+  /// </summary>
   public GetCharactersQueryValidator() {
     RuleFor(query => query.Page)
       .Must(GetCharactersQuery.PageIsValid)

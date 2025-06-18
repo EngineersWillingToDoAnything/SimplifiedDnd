@@ -10,6 +10,10 @@ public class Spell {
   public required CastingTime CastingTime { get;set; }
   public SpellComponent SpellComponents { get;set; }
 
+  /// <summary>
+  /// Initializes a new instance of the <see cref="Spell"/> class with the specified spell components.
+  /// </summary>
+  /// <param name="component">The components required to cast the spell.</param>
   public Spell(SpellComponent component)
   {
     SpellComponents = component;

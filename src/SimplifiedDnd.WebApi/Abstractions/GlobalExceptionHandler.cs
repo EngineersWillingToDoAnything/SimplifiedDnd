@@ -9,6 +9,13 @@ internal sealed class GlobalExceptionHandler(
 ) : IExceptionHandler {
   private readonly DomainError _defaultError = new("Error.Default", "Server error", ErrorType.Failure);
 
+  /// <summary>
+  /// Handles an unhandled exception by logging it and returning a standardized JSON error response.
+  /// </summary>
+  /// <param name="httpContext">The current HTTP context for the request.</param>
+  /// <param name="exception">The exception to handle.</param>
+  /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+  /// <returns>True, indicating the exception was handled.</returns>
   public async ValueTask<bool> TryHandleAsync(
     HttpContext httpContext,
     Exception exception,

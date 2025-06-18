@@ -12,6 +12,10 @@ internal class CharacterDbEntity {
 
   public ICollection<CharacterClassDbEntity> CharacterClasses { get; init; } = [];
 
+  /// <summary>
+  /// Converts this database entity to its corresponding domain <see cref="Character"/> model.
+  /// </summary>
+  /// <returns>A <see cref="Character"/> domain object representing this entity, including its main class, additional classes, and species if available.</returns>
   internal Character ToDomain() {
     return new Character {
       Id = Id,

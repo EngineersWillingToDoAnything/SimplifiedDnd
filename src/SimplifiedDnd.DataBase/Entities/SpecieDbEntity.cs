@@ -10,6 +10,10 @@ internal class SpecieDbEntity {
 
   public ICollection<CharacterDbEntity> Characters { get; init; } = [];
 
+  /// <summary>
+  /// Converts this database entity to a domain <see cref="Specie"/> object, mapping the name and speed, and setting the size to <see cref="Size.Tiny"/>.
+  /// </summary>
+  /// <returns>A <see cref="Specie"/> domain model representing this entity.</returns>
   internal Specie ToDomain() {
     return new Specie {
       Name = Name,

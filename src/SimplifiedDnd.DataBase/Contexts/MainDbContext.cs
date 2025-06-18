@@ -12,11 +12,20 @@ internal class MainDbContext(
   internal DbSet<ClassDbEntity> Classes { get; set; }
   internal DbSet<SpecieDbEntity> Species { get; set; }
 
+  /// <summary>
+  /// Configures the entity models by applying all configurations from the current assembly.
+  /// </summary>
+  /// <param name="modelBuilder">The builder used to construct the model for the context.</param>
   protected override void OnModelCreating(ModelBuilder modelBuilder) {
     modelBuilder.ApplyConfigurationsFromAssembly(typeof(MainDbContext).Assembly);
     base.OnModelCreating(modelBuilder);
   }
 
+  /// <summary>
+  /// Asynchronously saves all changes made in this context to the database.
+  /// </summary>
+  /// <param name="cancellationToken">A token to observe while waiting for the task to complete.</param>
+  /// <returns>The number of state entries written to the database.</returns>
   public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default) {
     int result = await base.SaveChangesAsync(cancellationToken);
     return result;

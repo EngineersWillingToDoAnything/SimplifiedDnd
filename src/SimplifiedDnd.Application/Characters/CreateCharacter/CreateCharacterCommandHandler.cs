@@ -11,6 +11,12 @@ internal sealed class CreateCharacterCommandHandler(
   IClassRepository classRepository,
   IUnitOfWork unitOfWork
 ) : ICommandHandler<CreateCharacterCommand, Guid> {
+  /// <summary>
+  /// Handles the creation of a new character, performing validation and persistence, and returns the unique identifier of the created character or an error result.
+  /// </summary>
+  /// <param name="command">The command containing character creation details.</param>
+  /// <param name="cancellationToken">Token for cancelling the asynchronous operation.</param>
+  /// <returns>The unique identifier of the newly created character, or an error if creation fails due to validation or existence checks.</returns>
   public async Task<Result<Guid>> Handle(
     CreateCharacterCommand command, CancellationToken cancellationToken
   ) {

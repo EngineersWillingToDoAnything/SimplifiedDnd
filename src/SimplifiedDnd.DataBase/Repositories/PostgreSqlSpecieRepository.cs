@@ -9,6 +9,12 @@ namespace SimplifiedDnd.DataBase.Repositories;
 internal sealed class PostgreSqlSpecieRepository(
   MainDbContext context
 ) : ISpecieRepository {
+  /// <summary>
+  /// Asynchronously retrieves a species by name, performing a case-insensitive search.
+  /// </summary>
+  /// <param name="name">The name of the species to retrieve.</param>
+  /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+  /// <returns>The matching <see cref="Specie"/> if found; otherwise, null.</returns>
   public async Task<Specie?> GetSpecieAsync(
     string name, CancellationToken cancellationToken
   ) {

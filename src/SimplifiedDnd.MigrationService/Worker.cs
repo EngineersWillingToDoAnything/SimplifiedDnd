@@ -14,6 +14,11 @@ internal class Worker(
   internal const string ActivitySourceName = "Migrations";
   private static readonly ActivitySource ActivitySource = new(ActivitySourceName);
 
+  /// <summary>
+  /// Executes the background task to apply database migrations and seed initial data, then signals the application to stop.
+  /// </summary>
+  /// <param name="stoppingToken">A token to observe for cancellation requests.</param>
+  /// <returns>A task representing the asynchronous operation.</returns>
   protected override async Task ExecuteAsync(CancellationToken stoppingToken) {
     using Activity? activity = ActivitySource.StartActivity(ActivityKind.Client);
 
@@ -31,6 +36,11 @@ internal class Worker(
     hostApplicationLifetime.StopApplication();
   }
 
+  /// <summary>
+  /// Applies pending database migrations using the execution strategy to handle transient failures.
+  /// </summary>
+  /// <param name="dbContext">The database context to apply migrations to.</param>
+  /// <param name="stoppingToken">A cancellation token to observe while waiting for the task to complete.</param>
   private static async Task RunMigrationAsync(
     MainDbContext dbContext, CancellationToken stoppingToken
   ) {
@@ -39,6 +49,11 @@ internal class Worker(
       await dbContext.Database.MigrateAsync(stoppingToken));
   }
 
+  /// <summary>
+  /// Seeds the database with initial species and class data using a resilient execution strategy and transaction.
+  /// </summary>
+  /// <param name="dbContext">The database context used for seeding data.</param>
+  /// <param name="stoppingToken">A cancellation token to observe while waiting for the task to complete.</param>
   private static async Task SeedDataAsync(
     MainDbContext dbContext, CancellationToken stoppingToken
   ) {

@@ -5,6 +5,10 @@ using SimplifiedDnd.DataBase.Entities;
 namespace SimplifiedDnd.DataBase.Configurations;
 
 internal class CharacterClassDbEntityConfiguration : IEntityTypeConfiguration<CharacterClassDbEntity> {
+  /// <summary>
+  /// Configures the database schema for the CharacterClassDbEntity, including table mapping, composite primary key, required properties, column names, and default values.
+  /// </summary>
+  /// <param name="builder">The builder used to configure the CharacterClassDbEntity entity type.</param>
   public void Configure(EntityTypeBuilder<CharacterClassDbEntity> builder) {
     builder.ToTable("character_classes");
     

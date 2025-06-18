@@ -31,6 +31,10 @@ internal class CreateCharacterEndpoint : IEndpoint {
     // ReSharper disable once MemberCanBePrivate.Global
     [JsonPropertyName("classes")] public IReadOnlyCollection<ClassRequest> Classes { get; init; } = null!;
 
+    /// <summary>
+    /// Converts the character creation request into a <see cref="CreateCharacterCommand"/> for processing.
+    /// </summary>
+    /// <returns>A <see cref="CreateCharacterCommand"/> populated with the request's character details and classes.</returns>
     internal CreateCharacterCommand ToCommand() {
       return new CreateCharacterCommand {
         Name = Name,
@@ -46,6 +50,9 @@ internal class CreateCharacterEndpoint : IEndpoint {
     }
   }
 
+  /// <summary>
+  /// Configures the HTTP POST endpoint for creating a new character at "api/character".
+  /// </summary>
   public void MapEndpoint(IEndpointRouteBuilder app) {
     app.MapPost("api/character", Handle)
       .Produces<Guid>(StatusCodes.Status201Created)
@@ -54,6 +61,14 @@ internal class CreateCharacterEndpoint : IEndpoint {
       .WithTags(Tags.Characters);
   }
 
+  /// <summary>
+  /// Processes a character creation request and returns an HTTP response indicating the result.
+  /// </summary>
+  /// <param name="request">The character creation request payload.</param>
+  /// <param name="cancellationToken">Token to observe while waiting for the operation to complete.</param>
+  /// <returns>
+  /// An HTTP 201 Created response with the new character's GUID if successful; otherwise, a problem response indicating the error.
+  /// </returns>
   private static async Task<IResult> Handle(
     [FromBody] Request request,
     ISender sender,

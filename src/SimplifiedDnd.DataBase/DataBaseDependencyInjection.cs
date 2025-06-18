@@ -8,6 +8,11 @@ using System.Diagnostics;
 namespace SimplifiedDnd.DataBase;
 
 public static class DataBaseDependencyInjection {
+  /// <summary>
+  /// Configures and registers the application's database context and related repositories for dependency injection using PostgreSQL.
+  /// </summary>
+  /// <param name="builder">The application builder to configure.</param>
+  /// <returns>The application builder with database services registered.</returns>
   public static IHostApplicationBuilder AddDataBase(this IHostApplicationBuilder builder) {
     Debug.Assert(builder is not null);
 

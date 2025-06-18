@@ -5,6 +5,12 @@ using SimplifiedDnd.Application.Abstractions.Core;
 namespace SimplifiedDnd.WebApi.Abstractions;
 
 internal static class CustomResults {
+  /// <summary>
+  /// Converts a failed <see cref="Result"/> into an HTTP problem response with appropriate status code, title, detail, type URI, and validation error details if applicable.
+  /// </summary>
+  /// <param name="result">A <see cref="Result"/> representing an error to be translated into an HTTP problem response. Must not indicate success.</param>
+  /// <returns>A <see cref="ProblemHttpResult"/> containing error information suitable for HTTP API responses.</returns>
+  /// <exception cref="InvalidOperationException">Thrown if the provided <paramref name="result"/> indicates success.</exception>
   internal static ProblemHttpResult Problem(Result result) {
     if (result.IsSuccess) {
       throw new InvalidOperationException();
