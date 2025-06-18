@@ -6,3 +6,9 @@ obj
 .vs
 .vscode
 .idea
+
+# JavaScript packages
+node_modules
+
+# NPM lock file
+package-lock.json
