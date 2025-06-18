@@ -1,12 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
         <OutputType>Exe</OutputType>
-        <RootNamespace>SimplifiedDnd.WebApi.FunctionalTests</RootNamespace>
-        <TargetFramework>net9.0</TargetFramework>
-        <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
         <EnableAspireComponents>true</EnableAspireComponents>
     </PropertyGroup>
 
