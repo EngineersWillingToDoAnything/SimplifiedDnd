@@ -4,9 +4,12 @@ IResourceBuilder<PostgresDatabaseResource> db = builder
   .AddPostgres("postgres")
   .AddDatabase("simplifiedDndDb");
 
-builder.AddProject<Projects.SimplifiedDnd_WebApi>("api")
+IResourceBuilder<ProjectResource> api = builder.AddProject<Projects.SimplifiedDnd_WebApi>("api")
   .WithReference(db)
   .WaitFor(db);
+
+builder.AddNpmApp("discordBot", "../frontend/SimplifiedDnd.DiscordBot")
+  .WithReference(api);
 
 builder.AddProject<Projects.SimplifiedDnd_MigrationService>("migrations")
   .WithReference(db)
