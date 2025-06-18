@@ -8,7 +8,7 @@ IResourceBuilder<ProjectResource> api = builder.AddProject<Projects.SimplifiedDn
   .WithReference(db)
   .WaitFor(db);
 
-builder.AddNpmApp("discordBot", "../frontend/SimplifiedDnd.DiscordBot")
+builder.AddNpmApp("discordBot", "../../../frontend/SimplifiedDnd.DiscordBot")
   .WithReference(api);
 
 builder.AddProject<Projects.SimplifiedDnd_MigrationService>("migrations")
