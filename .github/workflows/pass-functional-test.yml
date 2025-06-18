@@ -1,0 +1,22 @@
+name: Run Functional Tests
+on:
+  workflow_dispatch:
+
+env:
+  DOTNET_VERSION: '9.0.300' # The .NET SDK version to use
+
+jobs:
+  pass-backend-functional-tests:
+
+    name: Pass backend functional tests
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Test backend with functional tests
+      run: dotnet test --no-restore --verbosity normal -- xUnit.Explicit=on
