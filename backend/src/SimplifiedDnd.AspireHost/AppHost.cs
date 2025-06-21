@@ -11,6 +11,8 @@ IResourceBuilder<ProjectResource> api = builder.AddProject<Projects.SimplifiedDn
 builder.AddNpmApp("discordBot", "../../../frontend/SimplifiedDnd.DiscordBot")
   .WithReference(api);
 
+builder.AddNpmApp("commandLoader", "../../../frontend/SimplifiedDnd.DiscordBot", "reload");
+
 builder.AddProject<Projects.SimplifiedDnd_MigrationService>("migrations")
   .WithReference(db)
   .WaitFor(db);
