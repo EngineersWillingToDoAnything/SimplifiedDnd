@@ -6,7 +6,7 @@ import Logger from './abstractions/logger';
 
 dotenv.config();
 const logger = new Logger();
-const bot = new Bot();
+const bot = new Bot(undefined!);
 
 const rest = new REST().setToken(process.env.DISCORD_TOKEN ?? '');
 

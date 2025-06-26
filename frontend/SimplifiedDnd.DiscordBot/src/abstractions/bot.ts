@@ -4,15 +4,17 @@ import { Client, Collection, GatewayIntentBits } from 'discord.js';
 import { EventHandler } from './event-handler';
 import Logger from './logger';
 import CommandHandler from './command-handler';
+import DndCommandHandler from './dnd/dnd-command-handler';
+import DndService from './dnd/dnd-service';
 
 export default class Bot extends Client {
-  eventsHandler: Collection<string, EventHandler>;
   commandsHandler: Collection<string, CommandHandler>;
   logger: Logger;
 
-  constructor() {
+  constructor(
+    private readonly dndService: DndService,
+  ) {
     super({ intents: [GatewayIntentBits.Guilds] });
-    this.eventsHandler = new Collection<string, EventHandler>();
     this.commandsHandler = new Collection<string, CommandHandler>();
     this.logger = new Logger();
   }
@@ -37,7 +39,6 @@ export default class Bot extends Client {
       const EventClass = (await import(`../events/${eventFileName}.ts`)).default;
       const event: EventHandler = new EventClass(this);
       event.startListener(this);
-      this.eventsHandler.set(eventFileName, event);
       this.logger.logSuccess(`${eventFileName} loaded`);
     }
   }
@@ -56,6 +57,9 @@ export default class Bot extends Client {
     for (const commandFileName of commandsFiles) {
       const CommandClass = (await import(`../commands/${commandFileName}.ts`)).default;
       const command: CommandHandler = new CommandClass();
+      if (command instanceof DndCommandHandler) {
+        command.addDndService(this.dndService);
+      }
       const trimmedCommandName = commandFileName.replace('-handler', '');
       this.commandsHandler.set(trimmedCommandName, command);
       this.logger.logSuccess(`${trimmedCommandName} loaded`);
