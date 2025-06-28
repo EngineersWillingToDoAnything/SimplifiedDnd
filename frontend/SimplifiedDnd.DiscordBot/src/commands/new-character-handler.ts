@@ -2,7 +2,6 @@ import {
   ActionRowBuilder,
   CacheType,
   ChatInputCommandInteraction,
-  MessageFlags,
   SlashCommandBuilder,
   SlashCommandOptionsOnlyBuilder,
   StringSelectMenuBuilder,
@@ -11,6 +10,7 @@ import {
 } from 'discord.js';
 
 import DndCommandHandler from '../abstractions/dnd/dnd-command-handler';
+import { MaybeType } from '../abstractions/maybe-types';
 
 enum CommandOptions {
   CharacterName = 'name',
@@ -61,15 +61,16 @@ export default class NewCharacterCommandHandler extends DndCommandHandler {
       specieName,
     });
 
-    if (characterId === '') {
-      await interaction.followUp({
-        content: `Failed to create character \`${characterName}\`. Please try again later.`,
-        flags: MessageFlags.Ephemeral,
+    if (characterId?.type === MaybeType.DomainError) {
+      await interaction.editReply({
+        components: [],
+        content: characterId.detail,
       });
       return;
     }
 
-    await interaction.followUp({
+    await interaction.editReply({
+      components: [],
       content: `Character \`${characterName}\` has been created successfully!`,
     });
   }
@@ -80,17 +81,16 @@ export default class NewCharacterCommandHandler extends DndCommandHandler {
       .setPlaceholder('Make a choice!')
       .addOptions(
         new StringSelectMenuOptionBuilder()
+          .setLabel('Dragonborn')
+          .setDescription('Shaped by draconic gods or the dragons themselves')
+          .setValue('Dragonborn'),
+        new StringSelectMenuOptionBuilder()
+          .setLabel('Barbarian')
+          .setValue('Barbarian'),
+        new StringSelectMenuOptionBuilder()
           .setLabel('Human')
           .setDescription('The common specie of the world.')
-          .setValue('human'),
-        // new StringSelectMenuOptionBuilder()
-        //   .setLabel('Tiefling')
-        //   .setDescription('Mixture of human and `something else`')
-        //   .setValue('tiefling'),
-        // new StringSelectMenuOptionBuilder()
-        //   .setLabel('Halfling')
-        //   .setDescription('Half tall as humans and not as stocky as dwarves.')
-        //   .setValue('halfling'),
+          .setValue('Human'),
       );
   }
 
@@ -103,7 +103,7 @@ export default class NewCharacterCommandHandler extends DndCommandHandler {
 
     const response = await interaction.reply({
       components: [row],
-      content: "Please select your character's specie:",
+      content: "Select your character's `specie`:",
       withResponse: true,
     });
 
@@ -115,7 +115,7 @@ export default class NewCharacterCommandHandler extends DndCommandHandler {
         },
       );
 
-      collected?.deferUpdate();
+      await collected?.deferUpdate();
       return (collected as StringSelectMenuInteraction).values[0];
     } catch {
       return undefined;
@@ -129,11 +129,11 @@ export default class NewCharacterCommandHandler extends DndCommandHandler {
       .addOptions(
         new StringSelectMenuOptionBuilder()
           .setLabel('Artificer')
-          .setValue('artificer'),
+          .setValue('Artificer'),
         new StringSelectMenuOptionBuilder()
           .setLabel('Barbarian')
-          .setValue('barbarian'),
-        new StringSelectMenuOptionBuilder().setLabel('Bard').setValue('bard'),
+          .setValue('Barbarian'),
+        new StringSelectMenuOptionBuilder().setLabel('Bard').setValue('Bard'),
       );
   }
 
@@ -146,6 +146,7 @@ export default class NewCharacterCommandHandler extends DndCommandHandler {
 
     const response = await interaction.editReply({
       components: [row],
+      content: "Perfect, now select your character's `class`:",
     });
 
     try {
@@ -154,8 +155,7 @@ export default class NewCharacterCommandHandler extends DndCommandHandler {
         time: 60_000,
       });
 
-      collected?.deferUpdate();
-      await interaction.deleteReply();
+      await collected.deferUpdate();
       return (collected as StringSelectMenuInteraction).values[0];
     } catch {
       return undefined;

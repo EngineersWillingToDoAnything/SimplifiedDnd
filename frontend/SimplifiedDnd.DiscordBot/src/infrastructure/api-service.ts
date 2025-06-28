@@ -1,10 +1,20 @@
 import DndService, { Character } from '../abstractions/dnd/dnd-service';
 import Logger from '../abstractions/logger';
+import HttpStatus from './http-status';
+import { Maybe, Just, DomainError } from '../abstractions/maybe-types';
 import { DndApiRequestFactory } from './request-factory';
 
 enum DndApiEndpoints {
   CreateCharacter = 'api/character',
 }
+
+type ErrorDetails = {
+  detail: string;
+  status: HttpStatus;
+  title: string;
+  traceId: string;
+  type: string;
+};
 
 export default class DndApiService implements DndService {
   url: URL;
@@ -23,7 +33,7 @@ export default class DndApiService implements DndService {
     this.logger = new Logger('DndApiService');
   }
 
-  async createCharacter(character: Character): Promise<string> {
+  async createCharacter(character: Character): Promise<Maybe<string>> {
     const requestBody =
       this.requestFactory.buildCreateCharacterRequest(character);
     const url = new URL(DndApiEndpoints.CreateCharacter, this.url);
@@ -36,10 +46,23 @@ export default class DndApiService implements DndService {
         method: 'POST',
       });
 
-      return await response.text();
+      if (response.status !== HttpStatus.Created) {
+        const responseBody = await response.text();
+        const errorDetails = JSON.parse(responseBody) as ErrorDetails;
+        const formattedBody = JSON.stringify(errorDetails, null, 2);
+        this.logger.logError(
+          `Failed to create character: ${response.status} ${response.statusText}\n${formattedBody}`,
+        );
+        return DomainError(errorDetails.title, errorDetails.detail);
+      }
+
+      return Just(await response.text());
     } catch (error) {
       this.logger.logError(`Failed to create character: ${error}`);
-      return '';
+      return DomainError(
+        'InternalError',
+        `An error occurred while creating the character ${character.name}`,
+      );
     }
   }
 }

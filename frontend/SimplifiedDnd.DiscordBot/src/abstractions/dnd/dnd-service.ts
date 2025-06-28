@@ -1,3 +1,5 @@
+import { Maybe } from '../maybe-types';
+
 export interface Character {
   name: string;
   playerId: string;
@@ -6,5 +8,5 @@ export interface Character {
 }
 
 export default interface DndService {
-  createCharacter(character: Character): Promise<string>;
+  createCharacter(character: Character): Promise<Maybe<string>>;
 }

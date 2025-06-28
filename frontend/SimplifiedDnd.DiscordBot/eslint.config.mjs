@@ -10,7 +10,11 @@ export default defineConfig([
     rules: {
       '@typescript-eslint/no-magic-numbers': [
         'error',
-        { ignore: [0, 1, 2], ignoreReadonlyClassProperties: true },
+        {
+          ignore: [0, 1, 2],
+          ignoreEnums: true,
+          ignoreReadonlyClassProperties: true,
+        },
       ],
       curly: ['error', 'multi-line', 'consistent'],
       'dot-notation': 'error',
