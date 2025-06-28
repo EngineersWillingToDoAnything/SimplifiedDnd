@@ -10,5 +10,5 @@ obj
 # JavaScript packages
 node_modules
 
-# NPM lock file
-package-lock.json
+# Environment files
+.env

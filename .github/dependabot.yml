@@ -6,7 +6,19 @@
 version: 2
 updates:
   - package-ecosystem: "nuget"
-    directory: "/"
+    directory: "/backend"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+      time: "16:00"
+    commit-message:
+      prefix: "fix"
+      include: "scope"
+    assignees:
+      - "gianluisdiana"
+
+  - package-ecosystem: "npm"
+    directory: "/frontend/SimplifiedDnd.DiscordBot"
     schedule:
       interval: "weekly"
       day: "sunday"
