@@ -2,7 +2,7 @@ IDistributedApplicationBuilder builder = DistributedApplication.CreateBuilder(ar
 
 IResourceBuilder<PostgresDatabaseResource> db = builder
   .AddPostgres("postgres")
-  .AddDatabase("simplifiedDndDb");
+  .AddDatabase("mainDb");
 
 IResourceBuilder<ProjectResource> api = builder.AddProject<Projects.SimplifiedDnd_WebApi>("api")
   .WithReference(db)
@@ -13,6 +13,7 @@ builder.AddNpmApp("discordBot", "../../../frontend/SimplifiedDnd.DiscordBot")
 
 builder.AddProject<Projects.SimplifiedDnd_MigrationService>("migrations")
   .WithReference(db)
-  .WaitFor(db);
+  .WaitFor(db)
+  .WithExplicitStart();
 
 await builder.Build().RunAsync();

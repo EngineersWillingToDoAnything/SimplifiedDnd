@@ -11,7 +11,7 @@ public static class DataBaseDependencyInjection {
   public static IHostApplicationBuilder AddDataBase(this IHostApplicationBuilder builder) {
     Debug.Assert(builder is not null);
 
-    builder.AddNpgsqlDbContext<MainDbContext>("simplifiedDndDb");
+    builder.AddNpgsqlDbContext<MainDbContext>("mainDb");
 
     builder.Services.AddScoped<IReadOnlyCharacterRepository, PostgreSqlCharacterRepository>();
     builder.Services.AddScoped<ICharacterRepository, PostgreSqlCharacterRepository>();
