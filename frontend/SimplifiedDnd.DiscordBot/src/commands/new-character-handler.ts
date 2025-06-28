@@ -25,7 +25,8 @@ export default class NewCharacterCommandHandler extends DndCommandHandler {
       .setName('new-character')
       .setDescription('Create a new character assigned to the user')
       .addStringOption(option =>
-        option.setName(CommandOptions.CharacterName)
+        option
+          .setName(CommandOptions.CharacterName)
           .setDescription('The name of the character')
           .setRequired(true),
       );
@@ -38,23 +39,26 @@ export default class NewCharacterCommandHandler extends DndCommandHandler {
   protected async handleCommand(
     interaction: ChatInputCommandInteraction<CacheType>,
   ): Promise<void> {
-    const characterName = interaction.options.getString(CommandOptions.CharacterName, true);
+    const characterName = interaction.options.getString(
+      CommandOptions.CharacterName,
+      true,
+    );
 
     const specieName = await this.getSpecie(interaction);
     const className = await this.getClass(interaction);
     if (!specieName || !className) {
       await interaction.editReply({
-        content: 'Confirmation not received within 1 minute, cancelling',
         components: [],
+        content: 'Confirmation not received within 1 minute, cancelling',
       });
       return;
     }
 
     const characterId = await this.service?.createCharacter({
+      className,
       name: characterName,
       playerId: interaction.user.id,
       specieName,
-      className,
     });
 
     if (characterId === '') {
@@ -93,20 +97,23 @@ export default class NewCharacterCommandHandler extends DndCommandHandler {
   private async getSpecie(
     interaction: ChatInputCommandInteraction<CacheType>,
   ): Promise<string | undefined> {
-    const row = new ActionRowBuilder<StringSelectMenuBuilder>()
-      .addComponents(this.getSpecieSelectMenu());
+    const row = new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(
+      this.getSpecieSelectMenu(),
+    );
 
     const response = await interaction.reply({
-      content: 'Please select your character\'s specie:',
       components: [row],
+      content: "Please select your character's specie:",
       withResponse: true,
     });
 
     try {
-      const collected = await response.resource?.message?.awaitMessageComponent({
-        filter: i => i.user.id === interaction.user.id,
-        time: 60_000,
-      });
+      const collected = await response.resource?.message?.awaitMessageComponent(
+        {
+          filter: i => i.user.id === interaction.user.id,
+          time: 60_000,
+        },
+      );
 
       collected?.deferUpdate();
       return (collected as StringSelectMenuInteraction).values[0];
@@ -126,17 +133,16 @@ export default class NewCharacterCommandHandler extends DndCommandHandler {
         new StringSelectMenuOptionBuilder()
           .setLabel('Barbarian')
           .setValue('barbarian'),
-        new StringSelectMenuOptionBuilder()
-          .setLabel('Bard')
-          .setValue('bard'),
+        new StringSelectMenuOptionBuilder().setLabel('Bard').setValue('bard'),
       );
   }
 
   private async getClass(
     interaction: ChatInputCommandInteraction<CacheType>,
   ): Promise<string | undefined> {
-    const row = new ActionRowBuilder<StringSelectMenuBuilder>()
-      .addComponents(this.getClassSelectMenu());
+    const row = new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(
+      this.getClassSelectMenu(),
+    );
 
     const response = await interaction.editReply({
       components: [row],
@@ -155,4 +161,4 @@ export default class NewCharacterCommandHandler extends DndCommandHandler {
       return undefined;
     }
   }
-};
+}

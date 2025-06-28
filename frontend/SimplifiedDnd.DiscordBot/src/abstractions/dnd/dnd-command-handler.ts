@@ -22,7 +22,7 @@ export default abstract class DndCommandHandler implements CommandHandler {
   ): Promise<void> {
     if (!this.service) {
       await interaction.reply({
-        content:  'DND service is not initialized. Please try again later.',
+        content: 'DND service is not initialized. Please try again later.',
         flags: MessageFlags.Ephemeral,
       });
       return;

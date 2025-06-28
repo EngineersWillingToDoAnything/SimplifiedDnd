@@ -4,7 +4,9 @@ export interface EventHandler {
   startListener(client: Client): void;
 }
 
-export abstract class BaseEventHandler<Event extends keyof ClientEvents> implements EventHandler {
+export abstract class BaseEventHandler<Event extends keyof ClientEvents>
+  implements EventHandler
+{
   constructor(
     private readonly once: boolean,
     private readonly event: Event,

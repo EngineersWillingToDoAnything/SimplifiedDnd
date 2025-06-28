@@ -13,26 +13,27 @@ export default class DndApiService implements DndService {
 
   constructor() {
     // TODO: find a better way to handle self-signed certificates
-    process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
-    this.url = new URL((
-      process.env['NODE_ENV'] === 'development'
-        ? process.env['services__api__http__0']
-        : process.env['services__api__https__0']
-    ) ?? '');
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+    this.url = new URL(
+      (process.env.NODE_ENV === 'development'
+        ? process.env.services__api__http__0
+        : process.env.services__api__https__0) ?? '',
+    );
     this.requestFactory = new DndApiRequestFactory();
     this.logger = new Logger();
   }
 
   async createCharacter(character: Character): Promise<string> {
-    const requestBody = this.requestFactory.buildCreateCharacterRequest(character);
+    const requestBody =
+      this.requestFactory.buildCreateCharacterRequest(character);
     const url = new URL(DndApiEndpoints.CreateCharacter, this.url);
     try {
       const response = await fetch(url, {
-        method: 'POST',
+        body: requestBody,
         headers: {
           'Content-Type': 'application/json',
         },
-        body: requestBody,
+        method: 'POST',
       });
 
       return await response.text();
