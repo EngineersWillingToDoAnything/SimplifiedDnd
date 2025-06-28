@@ -20,7 +20,7 @@ export default class DndApiService implements DndService {
         : process.env.services__api__https__0) ?? '',
     );
     this.requestFactory = new DndApiRequestFactory();
-    this.logger = new Logger();
+    this.logger = new Logger('DndApiService');
   }
 
   async createCharacter(character: Character): Promise<string> {

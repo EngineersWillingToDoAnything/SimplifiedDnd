@@ -14,7 +14,7 @@ export default class Bot extends Client {
   constructor(private readonly dndService: DndService) {
     super({ intents: [GatewayIntentBits.Guilds] });
     this.commandsHandler = new Collection<string, CommandHandler>();
-    this.logger = new Logger();
+    this.logger = new Logger('Bot');
   }
 
   async load(): Promise<void> {
