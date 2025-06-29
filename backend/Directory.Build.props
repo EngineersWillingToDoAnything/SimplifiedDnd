@@ -19,7 +19,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <InternalsVisibleTo Include="$(AssemblyName).UnitTests" />
         <InternalsVisibleTo Include="$(AssemblyName).FunctionalTests" />
+        <InternalsVisibleTo Include="$(AssemblyName).IntegrationTests" />
+        <InternalsVisibleTo Include="$(AssemblyName).UnitTests" />
     </ItemGroup>
 </Project>
