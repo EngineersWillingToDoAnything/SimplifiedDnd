@@ -1,8 +1,8 @@
 using FluentAssertions;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using SimplifiedDnd.WebApi.FunctionalTests.Abstractions;
+using SimplifiedDnd.WebApi.FunctionalTests.Extensions;
 using System.Net;
 using System.Net.Http.Json;
 using Response = SimplifiedDnd.WebApi.Endpoints.Characters.GetCharactersEndpoint.Response;
@@ -104,12 +104,8 @@ public class GetCharactersEndpointTest(
       TestContextToken);
 
     // Assert
-    ProblemDetails? content = await response.Content.ReadFromJsonAsync<ProblemDetails>(TestContextToken);
-    content.Should().NotBeNull();
-    content.Title.Should().Be("Validation.General");
-    content.Status.Should().Be(StatusCodes.Status400BadRequest);
-    content.Detail.Should().Be("One or more validation errors occurred");
-    content.Extensions.Should().NotBeNullOrEmpty();
+    ProblemDetails? problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>(TestContextToken);
+    problemDetails.Should().BeValidationError();
   }
 
   [Theory(
@@ -152,12 +148,8 @@ public class GetCharactersEndpointTest(
       TestContextToken);
 
     // Assert
-    ProblemDetails? content = await response.Content.ReadFromJsonAsync<ProblemDetails>(TestContextToken);
-    content.Should().NotBeNull();
-    content.Title.Should().Be("Validation.General");
-    content.Status.Should().Be(StatusCodes.Status400BadRequest);
-    content.Detail.Should().Be("One or more validation errors occurred");
-    content.Extensions.Should().NotBeNullOrEmpty();
+    ProblemDetails? problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>(TestContextToken);
+    problemDetails.Should().BeValidationError();
   }
 
   [Fact(

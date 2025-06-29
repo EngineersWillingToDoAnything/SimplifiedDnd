@@ -8,8 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimplifiedDnd.Application",
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{9BB3D2EA-79F6-4172-97C2-959C5CF6001F}"
 	ProjectSection(SolutionItems) = preProject
-		Directory.Build.props = Directory.Build.props
-		Directory.Packages.props = Directory.Packages.props
+		Directory.Build.props = backend\Directory.Build.props
+		Directory.Packages.props = backend\Directory.Packages.props
 		.editorconfig = .editorconfig
 		.gitignore = .gitignore
 	EndProjectSection

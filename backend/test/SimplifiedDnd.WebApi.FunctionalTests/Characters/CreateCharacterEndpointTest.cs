@@ -1,7 +1,7 @@
 using FluentAssertions;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SimplifiedDnd.WebApi.FunctionalTests.Abstractions;
+using SimplifiedDnd.WebApi.FunctionalTests.Extensions;
 using System.Net;
 using System.Net.Http.Json;
 using System.Net.Mime;
@@ -49,11 +49,7 @@ public class CreateCharacterEndpointTest(
 
     // Assert
     ProblemDetails? problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>(TestContextToken);
-    problemDetails.Should().NotBeNull();
-    problemDetails.Title.Should().Be("Validation.General");
-    problemDetails.Status.Should().Be(StatusCodes.Status400BadRequest);
-    problemDetails.Detail.Should().Be("One or more validation errors occurred");
-    problemDetails.Extensions.Should().NotBeNullOrEmpty();
+    problemDetails.Should().BeValidationError();
   }
 
   private class WhiteSpaceData() : TheoryData<string>(string.Empty, " ");
@@ -120,11 +116,7 @@ public class CreateCharacterEndpointTest(
 
     // Assert
     ProblemDetails? problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>(TestContextToken);
-    problemDetails.Should().NotBeNull();
-    problemDetails.Title.Should().Be("Validation.General");
-    problemDetails.Status.Should().Be(StatusCodes.Status400BadRequest);
-    problemDetails.Detail.Should().Be("One or more validation errors occurred");
-    problemDetails.Extensions.Should().NotBeNullOrEmpty();
+    problemDetails.Should().BeValidationError();
   }
 
   [Theory(
@@ -189,11 +181,7 @@ public class CreateCharacterEndpointTest(
 
     // Assert
     ProblemDetails? problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>(TestContextToken);
-    problemDetails.Should().NotBeNull();
-    problemDetails.Title.Should().Be("Validation.General");
-    problemDetails.Status.Should().Be(StatusCodes.Status400BadRequest);
-    problemDetails.Detail.Should().Be("One or more validation errors occurred");
-    problemDetails.Extensions.Should().NotBeNullOrEmpty();
+    problemDetails.Should().BeValidationError();
   }
 
   [Theory(
@@ -258,11 +246,7 @@ public class CreateCharacterEndpointTest(
 
     // Assert
     ProblemDetails? problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>(TestContextToken);
-    problemDetails.Should().NotBeNull();
-    problemDetails.Title.Should().Be("Validation.General");
-    problemDetails.Status.Should().Be(StatusCodes.Status400BadRequest);
-    problemDetails.Detail.Should().Be("One or more validation errors occurred");
-    problemDetails.Extensions.Should().NotBeNullOrEmpty();
+    problemDetails.Should().BeValidationError();
   }
 
   [Theory(
@@ -327,11 +311,7 @@ public class CreateCharacterEndpointTest(
 
     // Assert
     ProblemDetails? problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>(TestContextToken);
-    problemDetails.Should().NotBeNull();
-    problemDetails.Title.Should().Be("Validation.General");
-    problemDetails.Status.Should().Be(StatusCodes.Status400BadRequest);
-    problemDetails.Detail.Should().Be("One or more validation errors occurred");
-    problemDetails.Extensions.Should().NotBeNullOrEmpty();
+    problemDetails.Should().BeValidationError();
   }
 
   [Fact(
@@ -394,11 +374,7 @@ public class CreateCharacterEndpointTest(
 
     // Arrange
     ProblemDetails? problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>(TestContextToken);
-    problemDetails.Should().NotBeNull();
-    problemDetails.Title.Should().Be("Validation.General");
-    problemDetails.Status.Should().Be(StatusCodes.Status400BadRequest);
-    problemDetails.Detail.Should().Be("One or more validation errors occurred");
-    problemDetails.Extensions.Should().NotBeNullOrEmpty();
+    problemDetails.Should().BeValidationError();
   }
 
   [Fact(
@@ -461,11 +437,7 @@ public class CreateCharacterEndpointTest(
 
     // Arrange
     ProblemDetails? problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>(TestContextToken);
-    problemDetails.Should().NotBeNull();
-    problemDetails.Title.Should().Be("Validation.General");
-    problemDetails.Status.Should().Be(StatusCodes.Status400BadRequest);
-    problemDetails.Detail.Should().Be("One or more validation errors occurred");
-    problemDetails.Extensions.Should().NotBeNullOrEmpty();
+    problemDetails.Should().BeValidationError();
   }
 
   [Fact(
@@ -507,7 +479,7 @@ public class CreateCharacterEndpointTest(
   [Fact(
     DisplayName = "Returns validation error with repeated class name",
     Explicit = true)]
-  public async Task EndpointReturnsValdiationErrorWithRepeatedClassName() {
+  public async Task EndpointReturnsValidationErrorWithRepeatedClassName() {
     // Arrange
     HttpClient client = _factory.CreateHttpClient(ApiResourceName);
     const string className = "-";
@@ -538,11 +510,7 @@ public class CreateCharacterEndpointTest(
 
     // Arrange
     ProblemDetails? problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>(TestContextToken);
-    problemDetails.Should().NotBeNull();
-    problemDetails.Title.Should().Be("Validation.General");
-    problemDetails.Status.Should().Be(StatusCodes.Status400BadRequest);
-    problemDetails.Detail.Should().Be("One or more validation errors occurred");
-    problemDetails.Extensions.Should().NotBeNullOrEmpty();
+    problemDetails.Should().BeValidationError();
   }
 
   [Fact(
