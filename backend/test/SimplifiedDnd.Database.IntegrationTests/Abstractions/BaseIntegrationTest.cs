@@ -1,9 +1,8 @@
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using SimplifiedDnd.DataBase.Contexts;
-using System.Diagnostics;
-using Microsoft.EntityFrameworkCore;
 using SimplifiedDnd.DataBase.Entities;
+using System.Diagnostics;
 
 namespace SimplifiedDnd.Database.IntegrationTests.Abstractions;
 
@@ -34,14 +33,41 @@ public abstract class BaseIntegrationTest : IClassFixture<IntegrationTestWebAppF
 
   public async ValueTask InitializeAsync() {
     if (_databaseSeeded) { return; }
-    
+
     DbContext.Classes.AddRange(
-      new ClassDbEntity { Name = "Artificer", },
-      new ClassDbEntity { Name = "Barbarian", },
-      new ClassDbEntity { Name = "Bard", });
-    DbContext.Species.Add(new SpecieDbEntity {
-      Name = "Dragonborn", Speed = 0
-    });
+      new ClassDbEntity { Id = 1, Name = "Artificer", },
+      new ClassDbEntity { Id = 2, Name = "Barbarian", },
+      new ClassDbEntity { Id = 3, Name = "Bard", });
+
+    DbContext.Species.AddRange(
+      new SpecieDbEntity { Id = 1, Name = "Dragonborn", Speed = 0 },
+      new SpecieDbEntity { Id = 2, Name = "Elf", Speed = 0 },
+      new SpecieDbEntity { Id = 3, Name = "Dwarf", Speed = 0 });
+
+    var characterId = Guid.CreateVersion7();
+    DbContext.Characters.AddRange(
+      new CharacterDbEntity {
+        Id = characterId, Name = "Test1", PlayerName = "...", SpecieId = 1
+      },
+      new CharacterDbEntity {
+        Id = Guid.CreateVersion7(), Name = "Bruce", PlayerName = "...", SpecieId = 2
+      },
+      new CharacterDbEntity {
+        Id = Guid.CreateVersion7(), Name = "Peter", PlayerName = "...", SpecieId = 2
+      },
+      new CharacterDbEntity {
+        Id = Guid.CreateVersion7(), Name = "Link", PlayerName = "...", SpecieId = 3
+      },
+      new CharacterDbEntity {
+        Id = Guid.CreateVersion7(), Name = "Sonic", PlayerName = "...", SpecieId = 1
+      },
+      new CharacterDbEntity {
+        Id = Guid.CreateVersion7(), Name = "Mario", PlayerName = "...", SpecieId = 3
+      });
+    DbContext.CharacterClasses.Add(new CharacterClassDbEntity {
+        CharacterId = characterId, ClassId = 1, IsMainClass = true
+      }
+    );
     await DbContext.SaveChangesAsync();
     _databaseSeeded = true;
   }

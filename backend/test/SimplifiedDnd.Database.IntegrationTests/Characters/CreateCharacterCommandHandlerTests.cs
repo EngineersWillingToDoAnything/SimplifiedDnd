@@ -19,7 +19,7 @@ public class CreateCharacterCommandHandlerTests(
   public async Task HandlerCreatesCharacter() {
     // Arrange
     var command = new CreateCharacterCommand {
-      Name = "...",
+      Name = $"{Guid.CreateVersion7()}",
       PlayerName = "...",
       Classes = [
         new DndClass {

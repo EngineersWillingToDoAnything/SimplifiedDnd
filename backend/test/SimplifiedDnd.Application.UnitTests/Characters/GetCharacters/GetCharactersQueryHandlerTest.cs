@@ -131,11 +131,17 @@ public sealed class GetCharactersQueryHandlerTest {
         TestContextToken);
   }
 
+#pragma warning disable S1144
+  private class ValidOrderKeys() : TheoryData<string>(
+#pragma warning restore S1144
+    nameof(Character.Id),
+    nameof(Character.Name),
+    nameof(Character.MainClass),
+    nameof(Character.Specie)
+  );
+
   [Theory(DisplayName = "Orders by specific key")]
-  [InlineData(nameof(Character.Id))]
-  [InlineData(nameof(Character.Name))]
-  [InlineData(nameof(Character.MainClass))]
-  [InlineData(nameof(Character.Specie))]
+  [ClassData(typeof(ValidOrderKeys))]
   public async Task HandlerOrdersBySpecificKey(string orderKey) {
     // Arrange
     var query = new GetCharactersQuery {
