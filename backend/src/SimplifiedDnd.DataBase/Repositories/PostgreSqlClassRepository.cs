@@ -6,15 +6,15 @@ using SimplifiedDnd.Domain.Characters;
 
 namespace SimplifiedDnd.DataBase.Repositories;
 
-internal sealed class PostgreSqlClassRepository(
+internal class PostgreSqlClassRepository(
   MainDbContext context
 ) : IClassRepository {
   public async Task<bool> CheckClassExistsAsync(
     string name, CancellationToken cancellationToken = default
   ) {
-#pragma warning disable CA1304, CA1311, CA1862
     string formattedName = name.ToUpperInvariant();
 
+#pragma warning disable CA1304, CA1311, CA1862
     return await context.Classes.AnyAsync(c => 
       c.Name.ToUpper() == formattedName, cancellationToken);
 #pragma warning restore CA1304, CA1311, CA1862

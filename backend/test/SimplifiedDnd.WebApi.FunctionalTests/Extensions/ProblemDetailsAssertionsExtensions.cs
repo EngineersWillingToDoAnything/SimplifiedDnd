@@ -6,7 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace SimplifiedDnd.WebApi.FunctionalTests.Extensions;
 
 internal static class ProblemDetailsAssertionsExtensions {
-  internal static void BeValidationError(this ObjectAssertions assertions) {
+  internal static void BeValidationError(
+    this ObjectAssertions assertions
+  ) {
     ProblemDetails? problemDetails = assertions.Subject.Should().BeOfType<ProblemDetails>().Subject;
     problemDetails.Should().NotBeNull();
     problemDetails.Title.Should().Be("Validation.General");
