@@ -153,7 +153,7 @@ public class CreateCharacterCommandHandlerTest {
 
     // Assert
     _characterRepository.Received(1)
-      .SaveCharacter(Arg.Is<Character>(c => c.Name == command.Name));
+      .AddCharacter(Arg.Is<Character>(c => c.Name == command.Name));
   }
 
   [Fact(DisplayName = "Saves character with given player name")]
@@ -179,7 +179,7 @@ public class CreateCharacterCommandHandlerTest {
 
     // Assert
     _characterRepository.Received(1)
-      .SaveCharacter(Arg.Is<Character>(c => c.PlayerName == command.PlayerName));
+      .AddCharacter(Arg.Is<Character>(c => c.PlayerName == command.PlayerName));
   }
 
   [Fact(DisplayName = "Saves character with given specie")]
@@ -210,7 +210,7 @@ public class CreateCharacterCommandHandlerTest {
 
     // Assert
     _characterRepository.Received(1)
-      .SaveCharacter(Arg.Is<Character>(c => c.Specie == expectedSpecie));
+      .AddCharacter(Arg.Is<Character>(c => c.Specie == expectedSpecie));
   }
 
   [Fact(DisplayName = "Saves character with main class as first class")]
@@ -236,7 +236,7 @@ public class CreateCharacterCommandHandlerTest {
 
     // Assert
     _characterRepository.Received(1)
-      .SaveCharacter(Arg.Is<Character>(c => c.MainClass == command.Classes.First()));
+      .AddCharacter(Arg.Is<Character>(c => c.MainClass == command.Classes.First()));
   }
 
   [Fact(DisplayName = "Saves character with multi class from extra classes")]
@@ -267,7 +267,7 @@ public class CreateCharacterCommandHandlerTest {
 
     // Assert
     _characterRepository.Received(1)
-      .SaveCharacter(Arg.Is<Character>(character =>
+      .AddCharacter(Arg.Is<Character>(character =>
         character.Classes.All(c => expectedClasses.Contains(c)) &&
         expectedClasses.All(c => character.Classes.Contains(c))));
   }

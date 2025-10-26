@@ -12,5 +12,5 @@ public interface IReadOnlyCharacterRepository {
 }
 
 public interface ICharacterRepository : IReadOnlyCharacterRepository {
-  void SaveCharacter(Character character);
+  void AddCharacter(Character character);
 }

@@ -47,7 +47,7 @@ internal sealed class CreateCharacterCommandHandler(
       Classes = [..command.Classes.Skip(1)],
     };
 
-    characterRepository.SaveCharacter(character);
+    characterRepository.AddCharacter(character);
     await unitOfWork.SaveChangesAsync(cancellationToken);
 
     return character.Id;

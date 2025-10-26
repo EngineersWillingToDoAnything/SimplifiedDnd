@@ -9,18 +9,28 @@ using SimplifiedDnd.Domain.Characters;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace SimplifiedDnd.DataBase.Repositories;
 
-internal sealed class PostgreSqlCharacterRepository(
+internal class PostgreSqlCharacterRepository(
   MainDbContext context
 ) : ICharacterRepository {
   public async Task<bool> CheckCharacterExistsAsync(
     string name, string playerName, CancellationToken cancellationToken
   ) {
-    return await context.Characters.AnyAsync(
-      c => c.Name == name && c.PlayerName == playerName,
-      cancellationToken);
+    try {
+#pragma warning disable CA1304, CA1311, CA1862
+      return await context.Characters.AnyAsync(
+        c => c.Name.ToUpper() == name.ToUpper() && 
+            c.PlayerName.ToUpper() == playerName.ToUpper(),
+        cancellationToken);
+#pragma warning restore CA1304, CA1311, CA1862
+    } catch (Exception ex) when (
+      ex is RetryLimitExceededException
+    ) {
+      return false;
+    }
   }
 
   public async Task<PaginatedResult<Character>> GetCharactersAsync(
@@ -48,34 +58,37 @@ internal sealed class PostgreSqlCharacterRepository(
     };
   }
 
-  public void SaveCharacter(Character character) {
+  public void AddCharacter(Character character) {
     Debug.Assert(character.MainClass is not null);
     Debug.Assert(character.Classes is not null);
     Debug.Assert(character.Specie is not null);
-
 #pragma warning disable CA1304, CA1311, CA1862
-    context.Characters.Add(new CharacterDbEntity {
+    Debug.Assert(context.Species.Any(species => 
+      species.Name.ToUpper() == character.Specie.Name.ToUpper()));
+
+    var entity = new CharacterDbEntity {
       Id = character.Id,
       Name = character.Name,
       PlayerName = character.PlayerName,
       SpecieId = context.Species.Single(entity =>
         entity.Name.ToUpper() == character.Specie.Name.ToUpper()).Id,
-    });
-
-    context.CharacterClasses.Add(new CharacterClassDbEntity {
-      CharacterId = character.Id,
-      ClassId = context.Classes.Single(entity =>
-        entity.Name.ToUpper() == character.MainClass.Name.ToUpper()).Id,
-      IsMainClass = true
-    });
-
-    context.CharacterClasses.AddRange(character.Classes
-      .Select(dndClass => new CharacterClassDbEntity {
-        CharacterId = character.Id,
-        ClassId = context.Classes.Single(entity =>
-          entity.Name.ToUpper() == dndClass.Name.ToUpper()).Id,
-        IsMainClass = false,
-      }));
+      CharacterClasses = [
+        new CharacterClassDbEntity {
+          CharacterId = character.Id,
+          ClassId = context.Classes.Single(entity =>
+            entity.Name.ToUpper() == character.MainClass.Name.ToUpper()).Id,
+          IsMainClass = true,
+        },
+        ..character.Classes
+          .Select(dndClass => new CharacterClassDbEntity {
+            CharacterId = character.Id,
+            ClassId = context.Classes.Single(entity =>
+              entity.Name.ToUpper() == dndClass.Name.ToUpper()).Id,
+            IsMainClass = false,
+          })
+      ],
+    };
+    context.Characters.Add(entity);
 #pragma warning restore CA1304, CA1311, CA1862
   }
 
