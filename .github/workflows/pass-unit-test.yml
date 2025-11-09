@@ -2,6 +2,10 @@ name: pass unit tests
 
 on:
   push:
+    branches: [main, develop]
+    paths:
+      - '**.cs'
+      - '**.csproj'
   pull_request:
     branches: [main, develop]
     paths:
@@ -28,4 +32,4 @@ jobs:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
     - name: Test backend
-      run: dotnet test --no-restore --verbosity normal
+      run: dotnet test -- xUnit.Explicit=off

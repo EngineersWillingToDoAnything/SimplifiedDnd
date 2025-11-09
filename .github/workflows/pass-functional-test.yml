@@ -1,13 +1,16 @@
-name: pass functional tests
+name: pass non-unit tests
 
 on:
-  workflow_dispatch:
-    inputs:
-      run_tests:
-        description: 'Run functional tests?'
-        required: true
-        type: boolean
-        default: true
+  push:
+    branches: [main]
+    paths:
+      - '**.cs'
+      - '**.csproj'
+  pull_request:
+    branches: [main]
+    paths:
+      - '**.cs'
+      - '**.csproj'
 
 env:
   DOTNET_VERSION: '9.0.300' # The .NET SDK version to use
@@ -25,4 +28,18 @@ jobs:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
     - name: Test backend with functional tests
-      run: dotnet test --no-restore --verbosity normal -- xUnit.Explicit=on
+      run: dotnet run --project backend/test/SimplifiedDnd.WebApi.FunctionalTests --explicit=on
+        
+  pass-database-integration-tests:
+
+    name: Pass database integration tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Test database with integration tests
+        run: dotnet run --project backend/test/SimplifiedDnd.Database.IntegrationTests --explicit=on
