@@ -17,7 +17,9 @@ internal class MainDbContext(
     base.OnModelCreating(modelBuilder);
   }
 
-  public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default) {
+  public override async Task<int> SaveChangesAsync(
+    CancellationToken cancellationToken = default
+  ) {
     int result = await base.SaveChangesAsync(cancellationToken);
     return result;
   }

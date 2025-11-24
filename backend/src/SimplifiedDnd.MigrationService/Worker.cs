@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
-using OpenTelemetry.Trace;
 using SimplifiedDnd.DataBase.Contexts;
 using SimplifiedDnd.DataBase.Entities;
 using System.Diagnostics;
@@ -24,7 +23,7 @@ internal class Worker(
       await RunMigrationAsync(dbContext, stoppingToken);
       await SeedDataAsync(dbContext, stoppingToken);
     } catch (Exception ex) {
-      activity?.RecordException(ex);
+      activity?.AddException(ex);
       throw;
     }
 

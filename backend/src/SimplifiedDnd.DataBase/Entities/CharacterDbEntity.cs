@@ -18,7 +18,7 @@ internal class CharacterDbEntity {
     Debug.Assert(CharacterClasses.Count > 0);
     Debug.Assert(CharacterClasses.All(c => c.Class is not null));
     Debug.Assert(CharacterClasses.Any(c => c.IsMainClass));
-    
+
     return new Character {
       Id = Id,
       Name = Name,

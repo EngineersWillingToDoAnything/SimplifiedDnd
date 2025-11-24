@@ -1,4 +1,6 @@
-using FluentValidation;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using SimplifiedDnd.Application;
 using SimplifiedDnd.DataBase;
 using SimplifiedDnd.WebApi.Abstractions;
@@ -11,11 +13,25 @@ builder.AddDataBase();
 
 builder.Services.AddOpenApi();
 
-builder.Services.AddValidatorsFromAssemblyContaining<Program>(includeInternalTypes: true);
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 builder.Services.AddEndpoints(typeof(Program).Assembly);
+
+builder.Services.AddOpenTelemetry()
+  .ConfigureResource(resource => resource.AddService("SimplifiedDndApi"))
+  .WithMetrics(metrics => {
+    metrics.AddAspNetCoreInstrumentation()
+      .AddHttpClientInstrumentation();
+
+    metrics.AddOtlpExporter();
+  })
+  .WithTracing(tracing => {
+    tracing.AddAspNetCoreInstrumentation()
+      .AddHttpClientInstrumentation();
+
+    tracing.AddOtlpExporter();
+  });
 
 WebApplication app = builder.Build();
 

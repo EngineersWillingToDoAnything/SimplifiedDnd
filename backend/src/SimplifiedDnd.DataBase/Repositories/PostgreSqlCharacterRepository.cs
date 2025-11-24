@@ -22,8 +22,8 @@ internal class PostgreSqlCharacterRepository(
     try {
 #pragma warning disable CA1304, CA1311, CA1862
       return await context.Characters.AnyAsync(
-        c => c.Name.ToUpper() == name.ToUpper() && 
-            c.PlayerName.ToUpper() == playerName.ToUpper(),
+        c => c.Name.ToUpper() == name.ToUpper() &&
+          c.PlayerName.ToUpper() == playerName.ToUpper(),
         cancellationToken);
 #pragma warning restore CA1304, CA1311, CA1862
     } catch (Exception ex) when (
@@ -53,7 +53,7 @@ internal class PostgreSqlCharacterRepository(
     List<CharacterDbEntity> entities = await query.ToListAsync(cancellationToken);
 
     return new PaginatedResult<Character> {
-      Values = [..entities.Select(entity => entity.ToDomain())],
+      Values = [.. entities.Select(entity => entity.ToDomain())],
       TotalAmount = totalAmount
     };
   }
@@ -63,7 +63,7 @@ internal class PostgreSqlCharacterRepository(
     Debug.Assert(character.Classes is not null);
     Debug.Assert(character.Specie is not null);
 #pragma warning disable CA1304, CA1311, CA1862
-    Debug.Assert(context.Species.Any(species => 
+    Debug.Assert(context.Species.Any(species =>
       species.Name.ToUpper() == character.Specie.Name.ToUpper()));
 
     var entity = new CharacterDbEntity {
@@ -118,7 +118,7 @@ internal class PostgreSqlCharacterRepository(
 #pragma warning disable CA1304, CA1311, CA1862
     private Expression<Func<CharacterDbEntity, bool>> ContainsNameExpression =>
       character => _formattedName != null &&
-                   character.Name.ToUpper().Contains(_formattedName);
+        character.Name.ToUpper().Contains(_formattedName);
 
     private Expression<Func<CharacterDbEntity, bool>> BelongsToAnyOfTheSpeciesExpression =>
       character => _formattedSpeciesName.Contains(character.Specie!.Name.ToUpper());
