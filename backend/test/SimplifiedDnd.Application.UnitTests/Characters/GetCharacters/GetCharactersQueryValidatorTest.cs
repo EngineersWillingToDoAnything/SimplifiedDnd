@@ -6,7 +6,7 @@ using SimplifiedDnd.Domain.Characters;
 
 namespace SimplifiedDnd.Application.UnitTests.Characters.GetCharacters;
 
-public sealed class GetCharactersQueryValidatorTest {
+public class GetCharactersQueryValidatorTest {
   private readonly GetCharactersQueryValidator _validator;
 
   public GetCharactersQueryValidatorTest() {
@@ -120,7 +120,7 @@ public sealed class GetCharactersQueryValidatorTest {
     // Assert
     result.ShouldNotHaveValidationErrorFor(q => q.Order);
   }
-  
+
   [Theory(DisplayName = "Returns invalid with empty class")]
   [InlineData(null)]
   [InlineData("")]

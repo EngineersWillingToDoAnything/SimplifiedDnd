@@ -8,7 +8,7 @@ using SimplifiedDnd.Domain.Characters;
 namespace SimplifiedDnd.Application.UnitTests.Characters.CreateCharacter;
 
 public class CreateCharacterCommandHandlerTest {
-  private static CancellationToken TestContextToken => TestContext.Current.CancellationToken;
+  private static readonly CancellationToken TestContextToken = TestContext.Current.CancellationToken;
 
   private readonly CreateCharacterCommandHandler _handler;
 

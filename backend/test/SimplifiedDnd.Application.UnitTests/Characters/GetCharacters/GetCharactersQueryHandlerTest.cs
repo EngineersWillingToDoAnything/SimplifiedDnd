@@ -6,8 +6,8 @@ using SimplifiedDnd.Domain.Characters;
 
 namespace SimplifiedDnd.Application.UnitTests.Characters.GetCharacters;
 
-public sealed class GetCharactersQueryHandlerTest {
-  private static CancellationToken TestContextToken => TestContext.Current.CancellationToken;
+public class GetCharactersQueryHandlerTest {
+  private static readonly CancellationToken TestContextToken = TestContext.Current.CancellationToken;
   private readonly GetCharactersQueryHandler _handler;
 
   private readonly IReadOnlyCharacterRepository _repository;

@@ -13,7 +13,7 @@ public class CreateCharacterCommandValidatorTest {
     " ");
 
   [Theory(DisplayName = "Returns invalid with empty name")]
-  [ClassData(typeof(NullOrWhiteSpaceData))]
+  [ClassData<NullOrWhiteSpaceData>]
   public void ValidatorReturnsInvalidWithEmptyName(string? name) {
     // Arrange
     var command = new CreateCharacterCommand {
@@ -33,7 +33,7 @@ public class CreateCharacterCommandValidatorTest {
   }
 
   [Theory(DisplayName = "Returns invalid with empty player name")]
-  [ClassData(typeof(NullOrWhiteSpaceData))]
+  [ClassData<NullOrWhiteSpaceData>]
   public void ValidatorReturnsInvalidWithEmptyPlayerName(string? playerName) {
     // Arrange
     var command = new CreateCharacterCommand {
@@ -53,7 +53,7 @@ public class CreateCharacterCommandValidatorTest {
   }
 
   [Theory(DisplayName = "Returns invalid with empty specie name")]
-  [ClassData(typeof(NullOrWhiteSpaceData))]
+  [ClassData<NullOrWhiteSpaceData>]
   public void ValidatorReturnsInvalidWithEmptySpecieName(string? specieName) {
     // Arrange
     var command = new CreateCharacterCommand {
@@ -93,7 +93,7 @@ public class CreateCharacterCommandValidatorTest {
   }
 
   [Theory(DisplayName = "Returns invalid with class with empty name")]
-  [ClassData(typeof(NullOrWhiteSpaceData))]
+  [ClassData<NullOrWhiteSpaceData>]
   public void ValidatorReturnsInvalidWithClassWithEmptyName(string? className) {
     // Arrange
     var command = new CreateCharacterCommand {
@@ -112,7 +112,7 @@ public class CreateCharacterCommandValidatorTest {
                         $"a level between {Level.MinLevel.Value} and {Level.MaxLevel.Value}")
       .WithErrorCode("CreateCharacterError.InvalidClasses");
   }
-  
+
   [Fact(DisplayName = "Returns invalid with class with level below minimum level")]
   public void ValidatorReturnsInvalidWithClassWithLevelBelowMinimumLevel() {
     // Arrange
@@ -132,7 +132,7 @@ public class CreateCharacterCommandValidatorTest {
                         $"a level between {Level.MinLevel.Value} and {Level.MaxLevel.Value}")
       .WithErrorCode("CreateCharacterError.InvalidClasses");
   }
-  
+
   [Fact(DisplayName = "Returns invalid with class with level above maximum level")]
   public void ValidatorReturnsInvalidWithClassWithLevelAboveMaximumLevel() {
     // Arrange
@@ -152,7 +152,7 @@ public class CreateCharacterCommandValidatorTest {
                         $"a level between {Level.MinLevel.Value} and {Level.MaxLevel.Value}")
       .WithErrorCode("CreateCharacterError.InvalidClasses");
   }
-  
+
   [Fact(DisplayName = "Returns invalid with at least one invalid class")]
   public void ValidatorReturnsInvalidWithAtLeastOneInvalidClass() {
     // Arrange
@@ -175,7 +175,7 @@ public class CreateCharacterCommandValidatorTest {
                         $"a level between {Level.MinLevel.Value} and {Level.MaxLevel.Value}")
       .WithErrorCode("CreateCharacterError.InvalidClasses");
   }
-  
+
   [Fact(DisplayName = "Returns invalid with repeated classes")]
   public void ValidatorReturnsInvalidWithRepeatedClasses() {
     // Arrange

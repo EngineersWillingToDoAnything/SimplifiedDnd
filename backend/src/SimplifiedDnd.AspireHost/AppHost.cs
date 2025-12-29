@@ -8,10 +8,12 @@ IResourceBuilder<ProjectResource> api = builder.AddProject<Projects.SimplifiedDn
   .WithReference(db)
   .WaitFor(db);
 
-builder.AddNpmApp("discordBot", "../../../frontend/SimplifiedDnd.DiscordBot")
+builder.AddJavaScriptApp("discordBot", "../../../frontend/SimplifiedDnd.DiscordBot")
+  .WithRunScript("start")
   .WithReference(api);
 
-builder.AddNpmApp("commandLoader", "../../../frontend/SimplifiedDnd.DiscordBot", "reload")
+builder.AddJavaScriptApp("commandLoader", "../../../frontend/SimplifiedDnd.DiscordBot")
+  .WithRunScript("reload")
   .WithExplicitStart();
 
 builder.AddProject<Projects.SimplifiedDnd_MigrationService>("migrations")
