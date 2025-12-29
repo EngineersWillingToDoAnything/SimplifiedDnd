@@ -18,11 +18,18 @@
   "type": "commonjs",
   "main": "index.ts",
   "scripts": {
-    "start": "ts-node src/index.ts",
-    "reload": "ts-node src/deploy-commands.ts",
+    "start": "npx tsx --import ./src/telemetry.ts src/index.ts",
+    "reload": "npx tsx --import ./src/telemetry.ts src/deploy-commands.ts",
     "format": "prettier --write . && eslint --fix ."
   },
   "dependencies": {
+    "@opentelemetry/api": "1.9.0",
+    "@opentelemetry/auto-instrumentations-node": "0.67.3",
+    "@opentelemetry/exporter-metrics-otlp-grpc": "0.208.0",
+    "@opentelemetry/exporter-trace-otlp-grpc": "0.208.0",
+    "@opentelemetry/sdk-metrics": "2.2.0",
+    "@opentelemetry/sdk-node": "0.208.0",
+    "@opentelemetry/sdk-trace-node": "2.2.0",
     "discord.js": "14.20.0",
     "dotenv": "16.5.0"
   },
